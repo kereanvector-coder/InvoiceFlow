@@ -23,6 +23,7 @@ export default function Setup() {
   const [darkMode, setDarkMode] = useState(false);
   const [defaultTax, setDefaultTax] = useState('0');
   const [reminderCooldown, setReminderCooldown] = useState('24');
+  const [defaultTemplate, setDefaultTemplate] = useState('corporate');
   
   const [showClearConfirm, setShowClearConfirm] = useState(false);
   const [clearConfirmText, setClearConfirmText] = useState('');
@@ -39,6 +40,7 @@ export default function Setup() {
     setDarkMode(safeGetItem('invoiceflow_dark_mode') === 'true');
     setDefaultTax(safeGetItem('invoiceflow_default_tax') || '0');
     setReminderCooldown(safeGetItem('invoiceflow_reminder_cooldown') || '24');
+    setDefaultTemplate(safeGetItem('invoiceflow_default_template') || 'corporate');
   }, [state.profile]);
 
   const formatPhoneNumber = (value: string) => {
@@ -139,6 +141,7 @@ export default function Setup() {
       safeSetItem('invoiceflow_dark_mode', darkMode.toString());
       safeSetItem('invoiceflow_default_tax', defaultTax);
       safeSetItem('invoiceflow_reminder_cooldown', reminderCooldown);
+      safeSetItem('invoiceflow_default_template', defaultTemplate);
       
       if (darkMode) {
         document.documentElement.classList.add('dark');
@@ -249,6 +252,25 @@ export default function Setup() {
                     <option value="24">24 hours</option>
                     <option value="48">48 hours</option>
                     <option value="72">72 hours</option>
+                  </select>
+                  <ChevronDown className="w-4 h-4 text-neutral-500 absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" />
+                </div>
+              </div>
+              <div className="p-4 flex items-center justify-between">
+                <div>
+                  <p className="font-medium text-neutral-900 dark:text-neutral-50">Default Template</p>
+                  <p className="text-xs text-neutral-500">For new invoices</p>
+                </div>
+                <div className="relative">
+                  <select 
+                    value={defaultTemplate}
+                    onChange={(e) => setDefaultTemplate(e.target.value)}
+                    className="appearance-none pl-3 pr-8 py-1.5 border border-border rounded-lg bg-neutral-50 dark:bg-neutral-950 text-neutral-900 dark:text-neutral-50 font-medium"
+                  >
+                    <option value="corporate">Corporate</option>
+                    <option value="modern">Modern</option>
+                    <option value="tech">Tech</option>
+                    <option value="classic">Classic</option>
                   </select>
                   <ChevronDown className="w-4 h-4 text-neutral-500 absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" />
                 </div>

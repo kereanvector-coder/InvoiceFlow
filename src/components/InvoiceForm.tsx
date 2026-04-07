@@ -25,6 +25,7 @@ export default function InvoiceForm({ initialData, isReadOnly = false }: Invoice
   const [formData, setFormData] = useState({
     client_name: initialData?.client_name || '',
     client_phone: initialData?.client_phone || '',
+    template: initialData?.template || localStorage.getItem('invoiceflow_default_template') || 'corporate',
     items: initialData?.items.length ? initialData.items.map(i => ({
       id: i.id,
       description: i.description,
@@ -139,6 +140,7 @@ export default function InvoiceForm({ initialData, isReadOnly = false }: Invoice
       business_snapshot: businessState.profile!,
       client_name: formData.client_name,
       client_phone: formatPhoneNumber(formData.client_phone),
+      template: formData.template,
       items: formData.items.map(i => ({
         id: i.id,
         description: i.description,
@@ -192,8 +194,7 @@ export default function InvoiceForm({ initialData, isReadOnly = false }: Invoice
       
       const fullInvoice = getInvoiceById(savedId!);
       if (fullInvoice) {
-        const encoded = encodeInvoice(fullInvoice);
-        navigate(`/invoice/${savedId}?data=${encoded}`);
+        navigate(`/invoice/${savedId}`);
       }
     } catch (err) {
       console.error(err);
@@ -401,6 +402,32 @@ export default function InvoiceForm({ initialData, isReadOnly = false }: Invoice
               disabled={isReadOnly}
               placeholder="Thank you for your business!"
             />
+          </div>
+        </section>
+
+        {/* Template Selection */}
+        <section>
+          <h2 className="text-h3 mb-4 text-neutral-800 dark:text-neutral-50">Template</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            {[
+              { id: 'corporate', name: 'Corporate', desc: 'Clean and professional' },
+              { id: 'modern', name: 'Modern', desc: 'Dark theme, emerald accents' },
+              { id: 'tech', name: 'Tech', desc: 'Dark mode, code-inspired' },
+              { id: 'classic', name: 'Classic', desc: 'Elegant serif typography' }
+            ].map(tpl => (
+              <div 
+                key={tpl.id}
+                onClick={() => !isReadOnly && setFormData(prev => ({ ...prev, template: tpl.id }))}
+                className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
+                  formData.template === tpl.id 
+                    ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/20' 
+                    : 'border-border bg-surface hover:border-primary-300'
+                } ${isReadOnly ? 'opacity-70 cursor-not-allowed' : ''}`}
+              >
+                <div className="font-bold text-neutral-900 dark:text-neutral-50 mb-1">{tpl.name}</div>
+                <div className="text-xs text-neutral-500">{tpl.desc}</div>
+              </div>
+            ))}
           </div>
         </section>
 

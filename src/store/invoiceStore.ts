@@ -14,6 +14,7 @@ export interface InvoiceItem {
 export interface Invoice {
   id: string; // uuid v4
   invoice_number: string;
+  template?: string;
   business_snapshot: BusinessProfile;
   client_name: string;
   client_phone: string;
@@ -185,6 +186,7 @@ export const createInvoice = (data: Partial<Invoice>): Invoice => {
     const newInvoice: Invoice = {
       id: crypto.randomUUID(),
       invoice_number: getNextInvoiceNumber(),
+      template: data.template || localStorage.getItem('invoiceflow_default_template') || 'corporate',
       business_snapshot: data.business_snapshot!,
       client_name: data.client_name!,
       client_phone: data.client_phone!,
@@ -230,6 +232,7 @@ export const updateInvoice = (id: string, updates: Partial<Invoice>): Invoice =>
     const updatedInvoice: Invoice = {
       ...existing,
       ...updates,
+      template: updates.template || existing.template || localStorage.getItem('invoiceflow_default_template') || 'corporate',
       items,
       subtotal,
       tax_rate,

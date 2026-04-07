@@ -1,14 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import { getInvoiceById, updateInvoiceStatus, deleteInvoice, updateInvoice, markInvoiceAsPaid, recordReminder, Invoice } from '../store/invoiceStore';
 import { decodeInvoice, encodeInvoice } from '../utils/encodeInvoice';
 import { cleanPhoneForWhatsApp } from '../utils/phone';
+import { generatePDF } from '../utils/pdfGenerator';
 import { Button, Badge, Modal, Card, EmptyState, Toast } from '../components/ui';
+import TemplatePreview from '../components/TemplatePreview';
 import { formatCurrency } from '../utils/formatCurrency';
 import { formatDate } from '../utils/formatDate';
 import { 
   ArrowLeft, Send, Bell, CheckCircle, Edit, Trash2, 
-  Printer, Building2, AlertCircle, Loader2, FileText, Check
+  Printer, Building2, AlertCircle, Loader2, FileText, Check, Download
 } from 'lucide-react';
 
 export default function InvoiceDetail() {
@@ -25,6 +27,8 @@ export default function InvoiceDetail() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const [isSending, setIsSending] = useState(false);
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
+  const invoiceRef = useRef<HTMLDivElement>(null);
   const [validationError, setValidationError] = useState<{ message: string; actionLabel?: string; actionFn?: () => void } | null>(null);
   const [fallbackModal, setFallbackModal] = useState({ isOpen: false, text: '' });
   const [copyLinkText, setCopyLinkText] = useState('📋 Copy Invoice Link');
@@ -124,6 +128,17 @@ export default function InvoiceDetail() {
   const getShareLink = () => {
     const encoded = encodeInvoice(invoice);
     return `${window.location.origin}/?invoice=${encoded}`;
+  };
+
+  const handleDownloadPDF = async () => {
+    if (!invoice || !invoiceRef.current) return;
+    setIsGeneratingPDF(true);
+    try {
+      const filename = `Invoice_${invoice.invoice_number}_${invoice.client_name.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.pdf`;
+      await generatePDF(invoiceRef.current, filename);
+    } finally {
+      setIsGeneratingPDF(false);
+    }
   };
 
   const handleCopyLink = () => {
@@ -400,7 +415,7 @@ Thank you.
         </div>
       )}
 
-      <div className="max-w-2xl mx-auto p-4 sm:p-6 print:p-0 mt-4 print:mt-0 relative overflow-hidden">
+      <div className="max-w-2xl mx-auto p-4 sm:p-6 print:p-0 mt-4 print:mt-0 relative overflow-hidden pb-32">
         
         {/* PAID WATERMARK */}
         {isPaid && (
@@ -412,122 +427,8 @@ Thank you.
         )}
 
         <div className="print:shadow-none print:border-none print:p-0 relative z-10">
-          {/* Branding */}
-          <div className="flex justify-between items-start mb-8 border-b border-border pb-6">
-            <div>
-              <h2 className="text-h1 text-neutral-900 dark:text-neutral-50 mb-1">{invoice.business_snapshot.business_name}</h2>
-              <div className="text-body text-neutral-600 dark:text-neutral-400">
-                <p>{invoice.business_snapshot.bank_name}</p>
-                <p className="font-bold text-lg text-neutral-900 dark:text-neutral-50">{invoice.business_snapshot.account_number}</p>
-                <p>{invoice.business_snapshot.account_name}</p>
-              </div>
-            </div>
-            <div className="text-right">
-              {!isSenderView && (
-                <div className="flex items-center justify-end gap-2 text-primary-600 mb-4">
-                  <Building2 className="w-6 h-6" />
-                  <span className="font-bold text-lg tracking-tight">InvoiceFlow</span>
-                </div>
-              )}
-              {isSenderView && <h2 className="text-h2 text-neutral-900 dark:text-neutral-50 mb-1">{invoice.invoice_number}</h2>}
-              <Badge variant={invoice.status}>
-                {invoice.status.toUpperCase()}
-              </Badge>
-            </div>
-          </div>
-
-          {/* Client & Dates */}
-          <div className="grid grid-cols-2 gap-6 mb-8">
-            <div>
-              <p className="text-label text-neutral-500 mb-1">Billed to</p>
-              <p className="font-bold text-neutral-900 dark:text-neutral-50">{invoice.client_name}</p>
-              <p className="text-body text-neutral-600 dark:text-neutral-400">{invoice.client_phone}</p>
-            </div>
-            <div className="text-right">
-              <div className="mb-4">
-                <p className="text-label text-neutral-500 mb-1">Issue Date</p>
-                <p className="font-medium text-neutral-900 dark:text-neutral-50">{formatDate(invoice.created_at)}</p>
-              </div>
-              <div>
-                <p className="text-label text-neutral-500 mb-1">Due Date</p>
-                <p className={`font-medium ${new Date(invoice.due_date) < new Date() && invoice.status !== 'paid' ? 'text-danger' : 'text-neutral-900 dark:text-neutral-50'}`}>
-                  {formatDate(invoice.due_date)}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Items Table */}
-          <div className="mb-8 overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="border-b border-border text-label text-neutral-500">
-                  <th className="py-3 font-medium">Description</th>
-                  <th className="py-3 font-medium text-right">Qty</th>
-                  <th className="py-3 font-medium text-right">Price</th>
-                  <th className="py-3 font-medium text-right">Total</th>
-                </tr>
-              </thead>
-              <tbody className="text-body text-neutral-800 dark:text-neutral-200">
-                {invoice.items.map((item, i) => (
-                  <tr key={item.id || i} className="border-b border-border/50">
-                    <td className="py-4">{item.description}</td>
-                    <td className="py-4 text-right">{item.quantity}</td>
-                    <td className="py-4 text-right">{formatCurrency(item.unit_price)}</td>
-                    <td className="py-4 text-right font-medium">{formatCurrency(item.quantity * item.unit_price)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-          {/* Totals */}
-          <div className="flex justify-end mb-8">
-            <div className="w-full sm:w-1/2 lg:w-1/3 space-y-3">
-              <div className="flex justify-between text-body text-neutral-600 dark:text-neutral-400">
-                <span>Subtotal</span>
-                <span>{formatCurrency(invoice.subtotal)}</span>
-              </div>
-              {invoice.tax_rate > 0 && (
-                <div className="flex justify-between text-body text-neutral-600 dark:text-neutral-400">
-                  <span>Tax ({invoice.tax_rate * 100}%)</span>
-                  <span>{formatCurrency(invoice.tax_amount)}</span>
-                </div>
-              )}
-              <div className="flex justify-between text-h2 text-neutral-900 dark:text-neutral-50 pt-3 border-t border-border">
-                <span className="font-bold">Total</span>
-                <span className="font-bold text-primary-600">{formatCurrency(invoice.total_amount)}</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Notes */}
-          {invoice.notes && (
-            <div className="text-body text-neutral-600 dark:text-neutral-400 mb-8">
-              <p className="text-label text-neutral-500 mb-1">Notes:</p>
-              <p className="whitespace-pre-wrap">{invoice.notes}</p>
-            </div>
-          )}
-
-          {/* Payment Details (Prominent for client) */}
-          <div className="bg-primary-50 dark:bg-primary-900/20 p-6 rounded-lg mb-8 border border-primary-100 dark:border-primary-800">
-            <h3 className="text-h3 text-primary-900 dark:text-primary-100 mb-4">
-              {isPaid ? "Payment Was Made To" : "Payment Details"}
-            </h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-body">
-              <div>
-                <p className="text-label text-primary-600/80 dark:text-primary-400/80">Bank</p>
-                <p className="font-medium text-primary-900 dark:text-primary-50">{invoice.business_snapshot.bank_name}</p>
-              </div>
-              <div>
-                <p className="text-label text-primary-600/80 dark:text-primary-400/80">Account Number</p>
-                <p className="font-bold text-primary-900 dark:text-primary-50 text-xl font-mono tracking-wider">{invoice.business_snapshot.account_number}</p>
-              </div>
-              <div className="sm:col-span-2">
-                <p className="text-label text-primary-600/80 dark:text-primary-400/80">Account Name</p>
-                <p className="font-medium text-primary-900 dark:text-primary-50">{invoice.business_snapshot.account_name}</p>
-              </div>
-            </div>
+          <div ref={invoiceRef}>
+            <TemplatePreview invoice={invoice} />
           </div>
 
           {/* Activity Timeline */}
@@ -567,6 +468,18 @@ Thank you.
                 className="w-full text-sm py-2"
               >
                 {copyLinkText}
+              </Button>
+              <Button 
+                variant="secondary" 
+                onClick={handleDownloadPDF}
+                disabled={isGeneratingPDF}
+                className="w-full text-sm py-2"
+              >
+                {isGeneratingPDF ? (
+                  <span className="flex items-center"><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Generating PDF...</span>
+                ) : (
+                  <><Download className="w-4 h-4 mr-2" /> Download PDF</>
+                )}
               </Button>
               <Button 
                 variant="ghost" 
@@ -648,6 +561,19 @@ Thank you.
                 className="w-full text-sm py-2"
               >
                 {copyLinkText}
+              </Button>
+
+              <Button 
+                variant="secondary" 
+                onClick={handleDownloadPDF}
+                disabled={isGeneratingPDF}
+                className="w-full text-sm py-2"
+              >
+                {isGeneratingPDF ? (
+                  <span className="flex items-center"><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Generating PDF...</span>
+                ) : (
+                  <><Download className="w-4 h-4 mr-2" /> Download PDF</>
+                )}
               </Button>
 
               {invoice.status === 'sent' && (
@@ -832,6 +758,24 @@ Thank you.
           </Button>
         </div>
       </Modal>
+
+      {/* Client Actions Bottom Bar */}
+      {!isSenderView && (
+        <div className="fixed bottom-0 left-0 right-0 p-4 bg-surface border-t border-border shadow-[0_-4px_12px_rgba(0,0,0,0.05)] z-40 print:hidden flex flex-col gap-3 max-w-2xl mx-auto" style={{ paddingBottom: 'calc(1rem + env(safe-area-inset-bottom))' }}>
+          <Button 
+            variant="primary" 
+            onClick={handleDownloadPDF}
+            disabled={isGeneratingPDF}
+            className="w-full text-sm py-2 bg-emerald-600 hover:bg-emerald-700 text-white border-transparent"
+          >
+            {isGeneratingPDF ? (
+              <span className="flex items-center"><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Generating PDF...</span>
+            ) : (
+              <><Download className="w-4 h-4 mr-2" /> Download PDF</>
+            )}
+          </Button>
+        </div>
+      )}
     </div>
   );
 }
