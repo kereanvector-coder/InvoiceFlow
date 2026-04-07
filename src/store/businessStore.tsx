@@ -8,6 +8,7 @@ export interface BusinessProfile {
   account_number: string;
   account_name: string;
   business_logo?: string;
+  signature?: string;
 }
 
 interface BusinessState {

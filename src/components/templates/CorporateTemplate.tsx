@@ -129,6 +129,18 @@ export default function CorporateTemplate({ invoice }: { invoice: Invoice }) {
           </div>
         )}
 
+        {/* Signature */}
+        {business.signature && (
+          <div className="mb-6 flex justify-end">
+            <div className="text-center">
+              <img src={business.signature} alt="Signature" className="h-16 object-contain mb-2 mx-auto" />
+              <div className="w-40 border-t border-neutral-300 mx-auto"></div>
+              <div className="text-[12px] text-[#475569] mt-1 font-medium">{business.owner_name}</div>
+              <div className="text-[10px] text-[#94A3B8] uppercase tracking-wider">Authorized Signatory</div>
+            </div>
+          </div>
+        )}
+
         {/* Footer */}
         <div className="border-t border-[#E2E8F0] pt-4 flex justify-between items-center">
           <div className="italic text-[13px] text-[#475569]">Thank you for your business</div>

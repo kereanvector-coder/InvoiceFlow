@@ -115,6 +115,17 @@ export default function ModernTemplate({ invoice }: { invoice: Invoice }) {
             <p className="text-neutral-300 text-sm leading-relaxed">{invoice.notes}</p>
           </div>
         )}
+
+        {/* Signature */}
+        {business.signature && (
+          <div className="p-6 sm:p-10 border-t border-neutral-800 flex justify-end">
+            <div className="text-center">
+              <img src={business.signature} alt="Signature" className="h-16 object-contain mb-2 mx-auto filter invert opacity-80" />
+              <div className="w-40 border-t border-neutral-700 mx-auto"></div>
+              <div className="text-neutral-400 text-sm mt-2 font-medium">{business.owner_name}</div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

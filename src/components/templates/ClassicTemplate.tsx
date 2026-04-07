@@ -110,6 +110,18 @@ export default function ClassicTemplate({ invoice }: { invoice: Invoice }) {
           </div>
         )}
 
+        {/* Signature */}
+        {business.signature && (
+          <div className="mb-12 flex justify-end">
+            <div className="text-center">
+              <img src={business.signature} alt="Signature" className="h-16 object-contain mb-2 mx-auto" />
+              <div className="w-48 border-t border-[#2C3E50] mx-auto"></div>
+              <div className="text-sm text-[#2C3E50] mt-2 font-bold">{business.owner_name}</div>
+              <div className="text-xs text-[#7F8C8D] uppercase tracking-widest mt-1">Authorized Signature</div>
+            </div>
+          </div>
+        )}
+
         {/* Footer */}
         <div className="text-center pt-8 border-t border-[#BDC3C7] text-xs text-[#7F8C8D]">
           <p>Thank you for your business.</p>

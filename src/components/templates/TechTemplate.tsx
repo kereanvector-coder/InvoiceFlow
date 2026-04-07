@@ -146,6 +146,18 @@ export default function TechTemplate({ invoice }: { invoice: Invoice }) {
         </div>
       )}
 
+      {/* Signature */}
+      {business.signature && (
+        <div className="mx-6 mt-6 flex justify-end">
+          <div className="text-center">
+            <div className="text-[11px] text-[#238636] mb-2">// auth_signature</div>
+            <img src={business.signature} alt="Signature" className="h-16 object-contain mb-2 mx-auto" />
+            <div className="w-40 border-t border-[#30363D] mx-auto"></div>
+            <div className="text-[12px] text-[#8B949E] mt-1 font-medium">{business.owner_name}</div>
+          </div>
+        </div>
+      )}
+
       {/* Footer */}
       <div className="border-t border-[#30363D] mt-6 px-6 py-4">
         <div className="text-[11px] text-[#8B949E]">

@@ -30,6 +30,7 @@ export default function Setup() {
 
   const [errors, setErrors] = useState<Partial<Record<keyof BusinessProfile, string>>>({});
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const signatureInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (state.profile) {
@@ -79,6 +80,17 @@ export default function Setup() {
       const reader = new FileReader();
       reader.onloadend = () => {
         setFormData(prev => ({ ...prev, business_logo: reader.result as string }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleSignatureUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFormData(prev => ({ ...prev, signature: reader.result as string }));
       };
       reader.readAsDataURL(file);
     }
@@ -188,6 +200,29 @@ export default function Setup() {
                   <p className="text-xs text-neutral-500 mb-2">Optional. Recommended size: 256x256px.</p>
                   <button type="button" onClick={() => fileInputRef.current?.click()} className="text-sm text-primary-600 font-medium">Upload Logo</button>
                   <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleLogoUpload} />
+                </div>
+              </div>
+              <div className="p-4 flex flex-col items-center sm:flex-row sm:items-start gap-4">
+                <div 
+                  className="w-32 h-16 rounded-lg bg-neutral-100 dark:bg-neutral-800 border border-border flex items-center justify-center overflow-hidden cursor-pointer hover:bg-neutral-200 dark:hover:bg-neutral-700 transition-colors shrink-0"
+                  onClick={() => signatureInputRef.current?.click()}
+                >
+                  {formData.signature ? (
+                    <img src={formData.signature} alt="Signature" className="max-w-full max-h-full object-contain" />
+                  ) : (
+                    <span className="text-xs text-neutral-400 font-medium">No Signature</span>
+                  )}
+                </div>
+                <div className="flex-1 text-center sm:text-left">
+                  <h3 className="text-sm font-medium text-neutral-800 dark:text-neutral-50 mb-1">Digital Signature</h3>
+                  <p className="text-xs text-neutral-500 mb-2">Optional. Will be appended to your invoices.</p>
+                  <div className="flex items-center justify-center sm:justify-start gap-3">
+                    <button type="button" onClick={() => signatureInputRef.current?.click()} className="text-sm text-primary-600 font-medium">Upload Signature</button>
+                    {formData.signature && (
+                      <button type="button" onClick={() => setFormData(prev => ({ ...prev, signature: undefined }))} className="text-sm text-danger font-medium">Remove</button>
+                    )}
+                  </div>
+                  <input type="file" ref={signatureInputRef} className="hidden" accept="image/*" onChange={handleSignatureUpload} />
                 </div>
               </div>
               <div className="p-4 space-y-4">
