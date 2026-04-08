@@ -183,11 +183,14 @@ export const createInvoice = (data: Partial<Invoice>): Invoice => {
     const tax_rate = data.tax_rate || 0;
     const { subtotal, tax_amount, total_amount } = calculateTotals(items, tax_rate);
 
+    const businessSnapshot = { ...data.business_snapshot! };
+    delete businessSnapshot.signature;
+
     const newInvoice: Invoice = {
       id: crypto.randomUUID(),
       invoice_number: getNextInvoiceNumber(),
       template: data.template || localStorage.getItem('invoiceflow_default_template') || 'corporate',
-      business_snapshot: data.business_snapshot!,
+      business_snapshot: businessSnapshot,
       client_name: data.client_name!,
       client_phone: data.client_phone!,
       items,
@@ -229,9 +232,15 @@ export const updateInvoice = (id: string, updates: Partial<Invoice>): Invoice =>
     
     const { subtotal, tax_amount, total_amount } = calculateTotals(items, tax_rate);
 
+    const businessSnapshot = updates.business_snapshot ? { ...updates.business_snapshot } : existing.business_snapshot;
+    if (businessSnapshot) {
+      delete businessSnapshot.signature;
+    }
+
     const updatedInvoice: Invoice = {
       ...existing,
       ...updates,
+      business_snapshot: businessSnapshot,
       template: updates.template || existing.template || localStorage.getItem('invoiceflow_default_template') || 'corporate',
       items,
       subtotal,

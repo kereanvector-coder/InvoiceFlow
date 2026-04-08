@@ -60,7 +60,24 @@ export default function InvoiceDetail() {
 
       const localInvoice = getInvoiceById(id);
       if (localInvoice) {
-        setInvoice(localInvoice);
+        // Inject signature for sender view
+        const invoiceWithSignature = {
+          ...localInvoice,
+          business_snapshot: {
+            ...localInvoice.business_snapshot
+          }
+        };
+        const businessStr = localStorage.getItem('invoiceflow_business');
+        if (businessStr) {
+          try {
+            const business = JSON.parse(businessStr);
+            if (business.signature) {
+              invoiceWithSignature.business_snapshot.signature = business.signature;
+            }
+          } catch (e) {}
+        }
+        
+        setInvoice(invoiceWithSignature);
         setIsSenderView(true);
         
         if (wasSent && localInvoice.status === 'overdue') {
