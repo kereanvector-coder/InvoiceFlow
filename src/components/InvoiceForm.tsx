@@ -414,7 +414,15 @@ export default function InvoiceForm({ initialData, isReadOnly = false }: Invoice
               { id: 'corporate', name: 'Corporate', desc: 'Clean and professional' },
               { id: 'modern', name: 'Modern', desc: 'Dark theme, emerald accents' },
               { id: 'tech', name: 'Tech', desc: 'Dark mode, code-inspired' },
-              { id: 'classic', name: 'Classic', desc: 'Elegant serif typography' }
+              { id: 'classic', name: 'Classic', desc: 'Elegant serif typography' },
+              { id: 'creative', name: 'Creative', desc: 'Bold & vibrant' },
+              { id: 'ecommerce', name: 'E-Commerce', desc: 'Clean receipt style' },
+              { id: 'executive', name: 'Executive', desc: 'Luxury & prestigious' },
+              { id: 'wellness', name: 'Wellness', desc: 'Calm & trustworthy' },
+              { id: 'trades', name: 'Trades', desc: 'Structured & rugged' },
+              { id: 'noir', name: 'Noir', desc: 'Elegant & editorial' },
+              { id: 'education', name: 'Education', desc: 'Clear & professional' },
+              { id: 'catering', name: 'Catering', desc: 'Warm & appetite-driven' }
             ].map(tpl => (
               <div 
                 key={tpl.id}
