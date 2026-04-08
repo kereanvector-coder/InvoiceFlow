@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { createBrowserRouter, RouterProvider, Navigate, Outlet } from 'react-router-dom';
 import { BusinessProvider, useBusinessStore } from './store/businessStore';
 import Landing from './pages/Landing';
@@ -11,7 +11,6 @@ import FinancialSummary from './pages/FinancialSummary';
 import InvoiceHistory from './pages/InvoiceHistory';
 import { BottomNav } from './components/BottomNav';
 import { ErrorBoundary } from './components/ErrorBoundary';
-import { SplashScreen } from './components/SplashScreen';
 import { PWAHandler } from './components/PWAHandler';
 
 function ProtectedLayout() {
@@ -32,22 +31,19 @@ function ProtectedLayout() {
 }
 
 function RootHandler() {
-  const [invoiceData, setInvoiceData] = useState<string | null>(null);
   const { state } = useBusinessStore();
 
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const data = params.get('invoice');
-    if (data) {
-      setInvoiceData(data);
-    }
-  }, []);
-
+  // Synchronous check for invoice data in URL
+  const params = new URLSearchParams(window.location.search);
+  const invoiceData = params.get('invoice');
+  
   if (invoiceData) {
     return <Navigate to={`/invoice/shared?data=${encodeURIComponent(invoiceData)}`} replace />;
   }
 
-  if (state.isLoaded && state.profile) {
+  if (!state.isLoaded) return null;
+
+  if (state.profile && state.profile.business_name) {
     return <Navigate to="/app" replace />;
   }
 
@@ -89,15 +85,10 @@ const router = createBrowserRouter([
 ]);
 
 export default function App() {
-  const [splashFinished, setSplashFinished] = useState(false);
-
   return (
     <ErrorBoundary>
       <BusinessProvider>
-        {!splashFinished && <SplashScreen onFinish={() => setSplashFinished(true)} />}
-        {splashFinished && (
-          <RouterProvider router={router} />
-        )}
+        <RouterProvider router={router} />
       </BusinessProvider>
     </ErrorBoundary>
   );

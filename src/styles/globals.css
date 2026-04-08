@@ -35,6 +35,14 @@
     -webkit-overflow-scrolling: touch;
     overscroll-behavior: contain;
   }
+  
+  .min-h-screen {
+    min-height: calc(var(--vh, 1vh) * 100) !important;
+  }
+  
+  .h-screen {
+    height: calc(var(--vh, 1vh) * 100) !important;
+  }
 }
 
 @keyframes shimmer {

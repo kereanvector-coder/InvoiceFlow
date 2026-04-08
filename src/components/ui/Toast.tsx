@@ -50,14 +50,17 @@ export const Toast: React.FC<ToastProps> = ({ isVisible, message, variant = 'inf
   return (
     <AnimatePresence>
       {isVisible && (
-        <div className="fixed top-4 left-0 right-0 z-50 flex justify-center px-4 pointer-events-none">
+        <div 
+          className="fixed z-[9999] pointer-events-none"
+          style={{ top: '16px', left: '50%', transform: 'translateX(-50%)', width: 'calc(100% - 32px)', maxWidth: '400px' }}
+        >
           <motion.div
             initial={shouldAnimate ? { y: -20, opacity: 0 } : { y: 0, opacity: 1 }}
             animate={{ y: 0, opacity: 1 }}
             exit={shouldAnimate ? { y: -20, opacity: 0 } : { y: 0, opacity: 1 }}
             transition={{ duration: 0.25, ease: 'easeOut' }}
             className={cn(
-              "w-full max-w-[400px] bg-surface shadow-lg rounded-md p-4 pointer-events-auto flex items-start gap-3",
+              "w-full bg-surface shadow-lg rounded-md p-4 pointer-events-auto flex items-start gap-3",
               variants[variant].border
             )}
             role="alert"

@@ -84,7 +84,7 @@ export default function FinancialSummary() {
   // Empty state check
   if (allInvoices.length === 0) {
     return (
-      <div className="min-h-screen bg-bg flex flex-col">
+      <div className="min-h-screen bg-bg flex flex-col pb-[100px]">
         <div className="bg-surface border-b border-border sticky top-0 z-10">
           <div className="max-w-3xl mx-auto px-4 sm:px-6 h-16 flex items-center gap-3">
             <button onClick={() => navigate('/app')} className="p-2 -ml-2 hover:bg-bg rounded-lg text-text-secondary transition-colors">

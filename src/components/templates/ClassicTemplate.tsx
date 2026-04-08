@@ -13,7 +13,7 @@ export default function ClassicTemplate({ invoice }: { invoice: Invoice }) {
         <div className="flex justify-between items-end border-b-2 border-[#2C3E50] pb-8 mb-8">
           <div>
             <h1 className="text-4xl font-bold tracking-tight text-[#1A252F] mb-2">INVOICE</h1>
-            <p className="text-sm text-[#7F8C8D] tracking-widest uppercase">No. {invoice.invoice_number}</p>
+            <p className="text-sm text-[#7F8C8D] tracking-widest uppercase font-mono">No. {invoice.invoice_number}</p>
           </div>
           <div className="text-right">
             <h2 className="text-2xl font-bold text-[#2C3E50] mb-2">{business.business_name}</h2>

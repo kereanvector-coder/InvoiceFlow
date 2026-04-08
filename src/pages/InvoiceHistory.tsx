@@ -119,7 +119,7 @@ export default function InvoiceHistory() {
   };
 
   return (
-    <div className="min-h-screen bg-bg pb-24 font-sans">
+    <div className="min-h-screen bg-bg pb-[100px] font-sans">
       <div className="bg-surface border-b border-border sticky top-0 z-10">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -197,7 +197,7 @@ export default function InvoiceHistory() {
                 <div className="flex justify-between items-start mb-3">
                   <div>
                     <h3 className="font-semibold text-text">{inv.client_name}</h3>
-                    <p className="text-sm text-text-secondary">{inv.invoice_number}</p>
+                    <p className="text-sm text-text-secondary font-mono">{inv.invoice_number}</p>
                   </div>
                   <div className="text-right">
                     <p className="font-bold text-text">{formatCurrency(inv.total_amount)}</p>

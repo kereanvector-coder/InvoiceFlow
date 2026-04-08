@@ -20,11 +20,6 @@ type BusinessAction =
   | { type: 'SET_PROFILE'; payload: BusinessProfile }
   | { type: 'LOADED' };
 
-const initialState: BusinessState = {
-  profile: null,
-  isLoaded: false,
-};
-
 const businessReducer = (state: BusinessState, action: BusinessAction): BusinessState => {
   switch (action.type) {
     case 'SET_PROFILE':
@@ -41,20 +36,24 @@ const BusinessContext = createContext<{
   saveProfile: (profile: BusinessProfile) => void;
 } | null>(null);
 
-export const BusinessProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [state, dispatch] = useReducer(businessReducer, initialState);
-
-  useEffect(() => {
-    const stored = localStorage.getItem('invoiceflow_business');
-    if (stored) {
-      try {
-        dispatch({ type: 'SET_PROFILE', payload: JSON.parse(stored) });
-      } catch (e) {
-        console.error('Failed to parse business profile', e);
-      }
+const getInitialState = (): BusinessState => {
+  const stored = localStorage.getItem('invoiceflow_business');
+  let profile = null;
+  if (stored) {
+    try {
+      profile = JSON.parse(stored);
+    } catch (e) {
+      console.error('Failed to parse business profile', e);
     }
-    dispatch({ type: 'LOADED' });
-  }, []);
+  }
+  return {
+    profile,
+    isLoaded: true,
+  };
+};
+
+export const BusinessProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [state, dispatch] = useReducer(businessReducer, getInitialState());
 
   const saveProfile = (profile: BusinessProfile) => {
     localStorage.setItem('invoiceflow_business', JSON.stringify(profile));

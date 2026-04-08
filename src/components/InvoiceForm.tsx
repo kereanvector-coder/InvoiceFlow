@@ -7,6 +7,7 @@ import { generateId } from '../utils/generateId';
 import { encodeInvoice } from '../utils/encodeInvoice';
 import { useBusinessStore } from '../store/businessStore';
 import { createInvoice, updateInvoice, getInvoiceById, Invoice } from '../store/invoiceStore';
+import TemplateThumbnail from './TemplateThumbnail';
 
 interface InvoiceFormProps {
   initialData?: Invoice;
@@ -408,7 +409,7 @@ export default function InvoiceForm({ initialData, isReadOnly = false }: Invoice
         {/* Template Selection */}
         <section>
           <h2 className="text-h3 mb-4 text-neutral-800 dark:text-neutral-50">Template</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="grid grid-cols-2 gap-4">
             {[
               { id: 'corporate', name: 'Corporate', desc: 'Clean and professional' },
               { id: 'modern', name: 'Modern', desc: 'Dark theme, emerald accents' },
@@ -418,14 +419,17 @@ export default function InvoiceForm({ initialData, isReadOnly = false }: Invoice
               <div 
                 key={tpl.id}
                 onClick={() => !isReadOnly && setFormData(prev => ({ ...prev, template: tpl.id }))}
-                className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
+                className={`p-3 sm:p-4 rounded-xl border-2 cursor-pointer transition-all flex flex-col sm:flex-row items-center sm:items-start gap-3 sm:gap-4 ${
                   formData.template === tpl.id 
                     ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/20' 
                     : 'border-border bg-surface hover:border-primary-300'
                 } ${isReadOnly ? 'opacity-70 cursor-not-allowed' : ''}`}
               >
-                <div className="font-bold text-neutral-900 dark:text-neutral-50 mb-1">{tpl.name}</div>
-                <div className="text-xs text-neutral-500">{tpl.desc}</div>
+                <TemplateThumbnail templateId={tpl.id} />
+                <div className="text-center sm:text-left flex-1">
+                  <div className="font-bold text-neutral-900 dark:text-neutral-50 mb-1">{tpl.name}</div>
+                  <div className="text-xs text-neutral-500">{tpl.desc}</div>
+                </div>
               </div>
             ))}
           </div>

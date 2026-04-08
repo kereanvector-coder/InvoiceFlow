@@ -21,7 +21,7 @@ export default function CorporateTemplate({ invoice }: { invoice: Invoice }) {
         
         <div className="flex justify-between items-end mt-4">
           <div>
-            <div className="text-[28px] font-bold text-white">{invoice.invoice_number}</div>
+            <div className="text-[28px] font-bold text-white font-mono">{invoice.invoice_number}</div>
             <div className="w-10 h-[3px] bg-[#C9A84C] mt-2"></div>
           </div>
           <div className="text-right text-white">
@@ -44,7 +44,7 @@ export default function CorporateTemplate({ invoice }: { invoice: Invoice }) {
             RE: {invoice.notes ? invoice.notes.split('\n')[0] : 'Professional Consulting Services'}
           </div>
           <div className="text-[12px] text-[#475569] mt-0.5">
-            Project Reference: {invoice.invoice_number}
+            Project Reference: <span className="font-mono">{invoice.invoice_number}</span>
           </div>
         </div>
 

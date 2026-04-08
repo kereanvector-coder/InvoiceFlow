@@ -29,7 +29,7 @@ export default function TechTemplate({ invoice }: { invoice: Invoice }) {
       <div className="bg-[#161B22] border-b border-[#30363D] px-6 py-4 flex justify-between items-center">
         <div>
           <div className="text-[14px] text-[#238636]">// INVOICE</div>
-          <div className="text-[12px] text-[#58A6FF] opacity-80 mt-1">const id = '{invoice.invoice_number}';</div>
+          <div className="text-[12px] text-[#58A6FF] opacity-80 mt-1 font-mono">const id = '{invoice.invoice_number}';</div>
         </div>
         <div className="text-[12px] text-[#8B949E]">
           /* status: {invoice.status.toUpperCase()} */
@@ -54,7 +54,7 @@ export default function TechTemplate({ invoice }: { invoice: Invoice }) {
         
         <div className="bg-[#21262D] border border-[#30363D] rounded-md px-3 py-1.5 inline-block mt-4">
           <div className="text-[11px] text-[#58A6FF]">
-            invoice_id: '{invoice.invoice_number}' | issued: '{formatDate(invoice.created_at)}'
+            invoice_id: '<span className="font-mono">{invoice.invoice_number}</span>' | issued: '{formatDate(invoice.created_at)}'
           </div>
         </div>
       </div>

@@ -5,6 +5,7 @@ import { Button, Input, Card } from '../components/ui';
 import { Upload, Image as ImageIcon, Moon, Sun, Download, Trash2, ChevronDown } from 'lucide-react';
 import { safeGetItem, safeSetItem } from '../utils/storage';
 import { getInvoices } from '../store/invoiceStore';
+import TemplateThumbnail from '../components/TemplateThumbnail';
 
 export default function Setup() {
   const navigate = useNavigate();
@@ -291,23 +292,31 @@ export default function Setup() {
                   <ChevronDown className="w-4 h-4 text-neutral-500 absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" />
                 </div>
               </div>
-              <div className="p-4 flex items-center justify-between">
-                <div>
+              <div className="p-4">
+                <div className="mb-3">
                   <p className="font-medium text-neutral-900 dark:text-neutral-50">Default Template</p>
                   <p className="text-xs text-neutral-500">For new invoices</p>
                 </div>
-                <div className="relative">
-                  <select 
-                    value={defaultTemplate}
-                    onChange={(e) => setDefaultTemplate(e.target.value)}
-                    className="appearance-none pl-3 pr-8 py-1.5 border border-border rounded-lg bg-neutral-50 dark:bg-neutral-950 text-neutral-900 dark:text-neutral-50 font-medium"
-                  >
-                    <option value="corporate">Corporate</option>
-                    <option value="modern">Modern</option>
-                    <option value="tech">Tech</option>
-                    <option value="classic">Classic</option>
-                  </select>
-                  <ChevronDown className="w-4 h-4 text-neutral-500 absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" />
+                <div className="grid grid-cols-2 gap-3">
+                  {[
+                    { id: 'corporate', name: 'Corporate' },
+                    { id: 'modern', name: 'Modern' },
+                    { id: 'tech', name: 'Tech' },
+                    { id: 'classic', name: 'Classic' }
+                  ].map(tpl => (
+                    <div 
+                      key={tpl.id}
+                      onClick={() => setDefaultTemplate(tpl.id)}
+                      className={`p-2 rounded-xl border-2 cursor-pointer transition-all flex flex-col items-center text-center gap-2 ${
+                        defaultTemplate === tpl.id 
+                          ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/20' 
+                          : 'border-border bg-surface hover:border-primary-300'
+                      }`}
+                    >
+                      <TemplateThumbnail templateId={tpl.id} />
+                      <div className="font-bold text-sm text-neutral-900 dark:text-neutral-50">{tpl.name}</div>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
@@ -354,9 +363,11 @@ export default function Setup() {
       {/* Clear Data Confirmation Bottom Sheet */}
       {showClearConfirm && (
         <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-          <div className="bg-white dark:bg-neutral-900 w-full max-w-md rounded-t-2xl sm:rounded-2xl p-6 animate-slide-up">
-            <div className="w-12 h-1.5 bg-neutral-200 dark:bg-neutral-700 rounded-full mx-auto mb-6 sm:hidden" />
-            <h3 className="text-xl font-bold text-danger mb-2">Clear All Data?</h3>
+          <div className="bg-white dark:bg-neutral-900 w-full max-w-md rounded-t-2xl sm:rounded-2xl p-6 animate-slide-up relative">
+            <div className="w-full flex justify-center absolute top-3 left-0 right-0 sm:hidden">
+              <div style={{ width: '36px', height: '4px', borderRadius: '999px', background: '#E5E7EB', margin: '0 auto 16px' }} />
+            </div>
+            <h3 className="text-xl font-bold text-danger mb-2 mt-2">Clear All Data?</h3>
             <p className="text-neutral-600 dark:text-neutral-400 mb-6">
               This action cannot be undone. All your invoices, settings, and business profile will be permanently deleted from this device.
             </p>

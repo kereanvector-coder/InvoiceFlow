@@ -9,41 +9,6 @@ export default function Landing() {
   const [openFAQ, setOpenFAQ] = useState<number | null>(null);
 
   useEffect(() => {
-    const setMetaTags = () => {
-      document.title = "InvoiceFlow — Get Paid Faster";
-      
-      const updateMeta = (name: string, content: string, isProperty = false) => {
-        let element = document.querySelector(`meta[${isProperty ? 'property' : 'name'}="${name}"]`);
-        if (!element) {
-          element = document.createElement('meta');
-          if (isProperty) {
-            element.setAttribute('property', name);
-          } else {
-            element.setAttribute('name', name);
-          }
-          document.head.appendChild(element);
-        }
-        element.setAttribute('content', content);
-      };
-
-      updateMeta('description', 'Send professional invoices via WhatsApp and track every payment from your phone. Free for Nigerian freelancers.');
-      updateMeta('og:title', 'InvoiceFlow — Get Paid Faster', true);
-      updateMeta('og:description', 'Create an invoice in 60 seconds. Send via WhatsApp. Get paid.', true);
-      updateMeta('og:type', 'website', true);
-      updateMeta('twitter:card', 'summary_large_image');
-      updateMeta('theme-color', '#059669');
-      
-      // Add Inter font
-      if (!document.querySelector('link[href*="fonts.googleapis.com/css2?family=Inter"]')) {
-        const link = document.createElement('link');
-        link.rel = 'stylesheet';
-        link.href = 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap';
-        document.head.appendChild(link);
-      }
-    };
-    
-    setMetaTags();
-
     const handleScroll = () => {
       setScrolled(window.scrollY > 50);
       setShowStickyCTA(window.scrollY > window.innerHeight);
@@ -73,7 +38,7 @@ export default function Landing() {
   };
 
   return (
-    <div className="min-h-screen bg-[#030712] font-sans" style={{ fontFamily: "'Inter', sans-serif" }}>
+    <div className="bg-[#030712] font-sans" style={{ fontFamily: "'Inter', sans-serif", minHeight: 'calc(var(--vh, 1vh) * 100)' }}>
       {/* SECTION 1 — TOP NAV */}
       <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 h-14 px-6 flex items-center justify-between ${scrolled ? 'bg-white shadow-sm' : 'bg-transparent'}`}>
         <div className="font-bold text-[20px] text-[#059669]">InvoiceFlow</div>
@@ -86,7 +51,7 @@ export default function Landing() {
       </nav>
 
       {/* SECTION 2 — HERO */}
-      <section className="min-h-screen pt-20 pb-12 px-6 flex flex-col items-center justify-center text-center relative overflow-hidden">
+      <section className="pt-20 pb-12 px-6 flex flex-col items-center justify-center text-center relative overflow-hidden" style={{ minHeight: 'calc(var(--vh, 1vh) * 100)' }}>
         <div className="max-w-[640px] w-full mx-auto relative z-10">
           <div className="inline-block px-3.5 py-1.5 rounded-full bg-[#059669]/15 border border-[#059669]/30 text-[#34D399] text-[13px] font-medium mb-6">
             For freelancers & small businesses in Nigeria

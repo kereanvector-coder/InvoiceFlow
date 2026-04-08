@@ -39,7 +39,7 @@ export default function EditInvoice() {
   const isReadOnly = invoice.status === 'paid';
 
   return (
-    <div className="min-h-screen bg-bg pt-8 px-4 sm:px-6">
+    <div className="min-h-screen bg-bg pt-8 px-4 sm:px-6 pb-[140px]">
       <InvoiceForm initialData={invoice} isReadOnly={isReadOnly} />
     </div>
   );

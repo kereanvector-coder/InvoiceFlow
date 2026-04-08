@@ -72,7 +72,7 @@ export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children, classNa
             >
               {/* Handle bar */}
               <div className="w-full flex justify-center pt-3 pb-2 sm:hidden cursor-grab active:cursor-grabbing">
-                <div className="w-10 h-1 rounded-full bg-neutral-200 dark:bg-neutral-800" />
+                <div style={{ width: '36px', height: '4px', borderRadius: '999px', background: '#E5E7EB', margin: '0 auto 16px' }} />
               </div>
               
               <div className="p-5 overflow-y-auto">

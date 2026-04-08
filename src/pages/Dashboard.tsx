@@ -583,7 +583,7 @@ export default function Dashboard() {
                     <div className="flex justify-between items-start mb-3">
                       <div>
                         <h3 className="font-bold text-neutral-900 dark:text-neutral-50 text-base truncate">{inv.client_name}</h3>
-                        <p className="text-xs text-neutral-500 mt-0.5">{inv.invoice_number} • {getRelativeDateText(inv.created_at)}</p>
+                        <p className="text-xs text-neutral-500 mt-0.5"><span className="font-mono">{inv.invoice_number}</span> • {getRelativeDateText(inv.created_at)}</p>
                       </div>
                       <div className="flex items-center gap-2 shrink-0">
                         <Badge variant={inv.status}>{inv.status.toUpperCase()}</Badge>
@@ -694,7 +694,7 @@ export default function Dashboard() {
         <button
           onClick={handleFabClick}
           className={`fixed right-6 w-14 h-14 bg-primary-600 rounded-full flex items-center justify-center text-white shadow-[0_4px_16px_rgba(5,150,105,0.4)] hover:bg-primary-700 hover:scale-105 transition-all z-40 ${!hasVisited ? 'animate-pulse-ring' : ''}`}
-          style={{ bottom: 'calc(64px + 16px + env(safe-area-inset-bottom))' }}
+          style={{ bottom: 'calc(64px + 20px + env(safe-area-inset-bottom))' }}
         >
           <span className="text-3xl font-light leading-none mb-1">+</span>
         </button>
@@ -704,10 +704,13 @@ export default function Dashboard() {
       {deleteModal.isOpen && deleteModal.invoice && (
         <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/50" onClick={() => setDeleteModal({ isOpen: false, invoice: null })}>
           <div 
-            className="bg-white dark:bg-neutral-900 w-full max-w-2xl rounded-t-[20px] p-6 shadow-xl transform transition-transform duration-300 translate-y-0"
+            className="bg-white dark:bg-neutral-900 w-full max-w-2xl rounded-t-[20px] p-6 shadow-xl transform transition-transform duration-300 translate-y-0 relative"
             onClick={e => e.stopPropagation()}
           >
-            <h3 className="text-xl font-bold text-neutral-900 dark:text-neutral-50 mb-4 text-center">
+            <div className="w-full flex justify-center absolute top-3 left-0 right-0">
+              <div style={{ width: '36px', height: '4px', borderRadius: '999px', background: '#E5E7EB', margin: '0 auto 16px' }} />
+            </div>
+            <h3 className="text-xl font-bold text-neutral-900 dark:text-neutral-50 mb-4 mt-2 text-center">
               Delete {deleteModal.invoice.invoice_number}?
             </h3>
             <div className="text-center mb-6">
