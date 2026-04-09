@@ -2,6 +2,7 @@ import React from 'react';
 import { Invoice } from '../../store/invoiceStore';
 import { formatCurrency } from '../../utils/formatCurrency';
 import { formatDate } from '../../utils/formatDate';
+import LogoDisplay from './LogoDisplay';
 
 export default function CorporateTemplate({ invoice }: { invoice: Invoice }) {
   const { business_snapshot: business, items } = invoice;
@@ -24,7 +25,8 @@ export default function CorporateTemplate({ invoice }: { invoice: Invoice }) {
             <div className="text-[28px] font-bold text-white font-mono">{invoice.invoice_number}</div>
             <div className="w-10 h-[3px] bg-[#C9A84C] mt-2"></div>
           </div>
-          <div className="text-right text-white">
+          <div className="text-right text-white flex flex-col items-end">
+            <LogoDisplay invoice={invoice} size={48} className="mb-3" style={{ border: '2px solid white', borderRadius: '8px' }} />
             <div className="text-[16px] font-bold">{business.business_name}</div>
             <div className="text-[13px] opacity-80 mt-1">Invoice Date: {formatDate(invoice.created_at)}</div>
             <div className="text-[13px] opacity-80">Due Date: {formatDate(invoice.due_date)}</div>

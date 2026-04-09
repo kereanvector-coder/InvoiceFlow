@@ -2,6 +2,7 @@ import React from 'react';
 import { Invoice } from '../../store/invoiceStore';
 import { formatCurrency } from '../../utils/formatCurrency';
 import { formatDate } from '../../utils/formatDate';
+import LogoDisplay from './LogoDisplay';
 
 export default function CreativeTemplate({ invoice }: { invoice: Invoice }) {
   const { business_snapshot: business, items } = invoice;
@@ -11,7 +12,10 @@ export default function CreativeTemplate({ invoice }: { invoice: Invoice }) {
       {/* Purple gradient hero band */}
       <div className="bg-gradient-to-br from-[#7C3AED] to-[#4F46E5] p-8 pb-10">
         <div className="flex justify-between items-start">
-          <div className="text-[11px] text-white/70 uppercase tracking-widest font-bold">Creative Invoice</div>
+          <div className="flex flex-col items-start gap-3">
+            <LogoDisplay invoice={invoice} size={48} style={{ borderRadius: '12px', border: '2px solid white' }} />
+            <div className="text-[11px] text-white/70 uppercase tracking-widest font-bold">Creative Invoice</div>
+          </div>
           <div className="bg-[#F59E0B] text-[#1E1B4B] px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
             {invoice.status}
           </div>

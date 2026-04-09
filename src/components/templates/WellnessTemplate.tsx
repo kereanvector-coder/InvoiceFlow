@@ -2,6 +2,7 @@ import React from 'react';
 import { Invoice } from '../../store/invoiceStore';
 import { formatCurrency } from '../../utils/formatCurrency';
 import { formatDate } from '../../utils/formatDate';
+import LogoDisplay from './LogoDisplay';
 
 export default function WellnessTemplate({ invoice }: { invoice: Invoice }) {
   const { business_snapshot: business, items } = invoice;
@@ -11,9 +12,12 @@ export default function WellnessTemplate({ invoice }: { invoice: Invoice }) {
       {/* Teal organic header */}
       <div className="bg-[#0D9488] rounded-b-[32px] pt-8 px-6 pb-10">
         <div className="flex justify-between items-start">
-          <div>
-            <div className="text-[20px] font-bold text-white mb-1">{business.business_name}</div>
-            <div className="text-[11px] text-white/70 uppercase tracking-widest">Wellness Invoice</div>
+          <div className="flex items-center gap-3">
+            <LogoDisplay invoice={invoice} size={48} style={{ borderRadius: '50%', border: '2px solid white' }} />
+            <div>
+              <div className="text-[20px] font-bold text-white mb-1">{business.business_name}</div>
+              <div className="text-[11px] text-white/70 uppercase tracking-widest">Wellness Invoice</div>
+            </div>
           </div>
           <div className="text-right">
             <div className="bg-white text-[#0D9488] px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider mb-1 inline-block">

@@ -2,18 +2,25 @@ import React from 'react';
 import { Invoice } from '../../store/invoiceStore';
 import { formatCurrency } from '../../utils/formatCurrency';
 import { formatDate } from '../../utils/formatDate';
+import LogoDisplay from './LogoDisplay';
+import { getLogo } from './LogoDisplay';
 
 export default function EducationTemplate({ invoice }: { invoice: Invoice }) {
   const { business_snapshot: business, items } = invoice;
+  const hasLogo = !!getLogo(invoice);
 
   return (
     <div className="bg-[#EFF6FF] min-h-screen font-sans text-[#1E3A8A] pb-6">
       {/* Official header */}
       <div className="bg-white border-b-[3px] border-b-[#1D4ED8] p-6 flex justify-between items-center">
         <div className="flex items-center gap-4">
-          <div className="w-[64px] h-[64px] bg-[#1D4ED8] border-[3px] border-[#DBEAFE] rounded-full flex items-center justify-center shrink-0">
-            <div className="text-white text-[10px] text-center font-bold leading-tight uppercase">Official<br/>Invoice</div>
-          </div>
+          {hasLogo ? (
+            <LogoDisplay invoice={invoice} size={64} style={{ borderRadius: '50%', border: '3px solid #DBEAFE' }} />
+          ) : (
+            <div className="w-[64px] h-[64px] bg-[#1D4ED8] border-[3px] border-[#DBEAFE] rounded-full flex items-center justify-center shrink-0">
+              <div className="text-white text-[10px] text-center font-bold leading-tight uppercase">Official<br/>Invoice</div>
+            </div>
+          )}
           <div>
             <div className="text-[18px] font-bold text-[#1D4ED8]">{business.business_name}</div>
             <div className="text-[12px] text-[#1D4ED8] mt-0.5">Educational Services</div>

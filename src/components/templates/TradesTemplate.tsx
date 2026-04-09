@@ -2,6 +2,7 @@ import React from 'react';
 import { Invoice } from '../../store/invoiceStore';
 import { formatCurrency } from '../../utils/formatCurrency';
 import { formatDate } from '../../utils/formatDate';
+import LogoDisplay from './LogoDisplay';
 
 export default function TradesTemplate({ invoice }: { invoice: Invoice }) {
   const { business_snapshot: business, items } = invoice;
@@ -16,9 +17,12 @@ export default function TradesTemplate({ invoice }: { invoice: Invoice }) {
 
       {/* Dark header */}
       <div className="bg-[#1C1917] pt-6 pb-4 px-5 flex justify-between items-start">
-        <div>
-          <div className="text-[20px] font-bold text-[#FEF3C7]">{business.business_name}</div>
-          <div className="text-[12px] text-[#EA580C] mt-1">Trades & General Services</div>
+        <div className="flex items-center gap-3">
+          <LogoDisplay invoice={invoice} size={48} style={{ borderRadius: '4px' }} />
+          <div>
+            <div className="text-[20px] font-bold text-[#FEF3C7]">{business.business_name}</div>
+            <div className="text-[12px] text-[#EA580C] mt-1">Trades & General Services</div>
+          </div>
         </div>
         <div className="text-right">
           <div className="border border-[#EA580C] text-[#EA580C] px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider mb-1 inline-block">

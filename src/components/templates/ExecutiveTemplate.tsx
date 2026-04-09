@@ -2,6 +2,7 @@ import React from 'react';
 import { Invoice } from '../../store/invoiceStore';
 import { formatCurrency } from '../../utils/formatCurrency';
 import { formatDate } from '../../utils/formatDate';
+import LogoDisplay from './LogoDisplay';
 
 export default function ExecutiveTemplate({ invoice }: { invoice: Invoice }) {
   const { business_snapshot: business, items } = invoice;
@@ -13,7 +14,8 @@ export default function ExecutiveTemplate({ invoice }: { invoice: Invoice }) {
 
       {/* Dark header */}
       <div className="bg-[#1A1A1A] px-7 py-9 flex justify-between items-start">
-        <div>
+        <div className="flex flex-col items-start">
+          <LogoDisplay invoice={invoice} size={56} className="mb-3" style={{ border: '2px solid #D4AF37', borderRadius: '4px' }} />
           <div className="text-[24px] font-[300] text-[#F5F0E8] uppercase tracking-[2px]">{business.business_name}</div>
           <div className="w-[60px] h-[1px] bg-[#C9A84C] my-3"></div>
           <div className="text-[10px] text-[#C9A84C] uppercase tracking-[0.3em]">Executive Invoice</div>

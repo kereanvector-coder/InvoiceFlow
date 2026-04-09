@@ -85,6 +85,39 @@ const router = createBrowserRouter([
 ]);
 
 export default function App() {
+  React.useEffect(() => {
+    // Remove splash screen smoothly
+    const removeSplash = () => {
+      const splash = 
+        document.getElementById('invoiceflow-splash') || 
+        (window as any).__invoiceFlowSplash
+      
+      if (splash) {
+        // Fade out
+        splash.style.opacity = '0'
+        splash.style.pointerEvents = 'none'
+        
+        // Remove from DOM after fade
+        setTimeout(() => {
+          if (splash.parentNode) {
+            splash.parentNode.removeChild(splash)
+          }
+          (window as any).__invoiceFlowSplash = null
+        }, 400)
+      }
+    }
+    
+    // Minimum splash display time: 800ms
+    // This prevents a jarring flash
+    // if the app loads very quickly
+    const minDisplayTime = 800
+    const startTime = (window as any).__splashStartTime || Date.now()
+    const elapsed = Date.now() - startTime
+    const remaining = Math.max(0, minDisplayTime - elapsed)
+    
+    setTimeout(removeSplash, remaining)
+  }, []);
+
   return (
     <ErrorBoundary>
       <BusinessProvider>

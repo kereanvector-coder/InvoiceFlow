@@ -2,9 +2,13 @@ import React from 'react';
 import { Invoice } from '../../store/invoiceStore';
 import { formatCurrency } from '../../utils/formatCurrency';
 import { formatDate } from '../../utils/formatDate';
+import LogoDisplay from './LogoDisplay';
+import { getLogo } from './LogoDisplay';
 
 export default function ClassicTemplate({ invoice }: { invoice: Invoice }) {
   const { business_snapshot: business, items } = invoice;
+  const hasLogo = !!getLogo(invoice);
+  const initials = business.business_name ? business.business_name.charAt(0).toUpperCase() : 'B';
   
   return (
     <div className="bg-[#FAF9F6] min-h-screen font-serif text-[#2C3E50]">
@@ -15,7 +19,14 @@ export default function ClassicTemplate({ invoice }: { invoice: Invoice }) {
             <h1 className="text-4xl font-bold tracking-tight text-[#1A252F] mb-2">INVOICE</h1>
             <p className="text-sm text-[#7F8C8D] tracking-widest uppercase font-mono">No. {invoice.invoice_number}</p>
           </div>
-          <div className="text-right">
+          <div className="text-right flex flex-col items-end">
+            {hasLogo ? (
+              <LogoDisplay invoice={invoice} size={56} className="mb-3" style={{ borderRadius: '50%' }} />
+            ) : (
+              <div className="w-14 h-14 rounded-full bg-[#2C3E50] text-white flex items-center justify-center text-xl font-bold mb-3">
+                {initials}
+              </div>
+            )}
             <h2 className="text-2xl font-bold text-[#2C3E50] mb-2">{business.business_name}</h2>
             <div className="text-sm text-[#34495E] leading-relaxed">
               <p>{business.owner_name}</p>

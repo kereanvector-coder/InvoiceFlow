@@ -2,6 +2,7 @@ import React from 'react';
 import { Invoice } from '../../store/invoiceStore';
 import { formatCurrency } from '../../utils/formatCurrency';
 import { formatDate } from '../../utils/formatDate';
+import LogoDisplay from './LogoDisplay';
 
 export default function ModernTemplate({ invoice }: { invoice: Invoice }) {
   const { business_snapshot: business, items } = invoice;
@@ -17,6 +18,7 @@ export default function ModernTemplate({ invoice }: { invoice: Invoice }) {
         {/* Header */}
         <div className="p-6 sm:p-10 border-b border-neutral-800 flex flex-col sm:flex-row justify-between items-start gap-6">
           <div>
+            <LogoDisplay invoice={invoice} size={56} className="mb-3" style={{ borderRadius: 0 }} />
             <h1 className="text-3xl font-bold text-white mb-2">{business.business_name}</h1>
             <p className="text-neutral-500 text-sm leading-relaxed max-w-xs">{business.owner_name}</p>
             <p className="text-neutral-500 text-sm mt-1">{business.phone_number}</p>

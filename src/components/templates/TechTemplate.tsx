@@ -2,6 +2,8 @@ import React from 'react';
 import { Invoice } from '../../store/invoiceStore';
 import { formatCurrency } from '../../utils/formatCurrency';
 import { formatDate } from '../../utils/formatDate';
+import LogoDisplay from './LogoDisplay';
+import { getLogo } from './LogoDisplay';
 
 export default function TechTemplate({ invoice }: { invoice: Invoice }) {
   const { business_snapshot: business, items } = invoice;
@@ -22,14 +24,21 @@ export default function TechTemplate({ invoice }: { invoice: Invoice }) {
   };
 
   const isOverdue = invoice.status === 'overdue' || (new Date(invoice.due_date) < new Date() && invoice.status !== 'paid');
+  const hasLogo = !!getLogo(invoice);
 
   return (
     <div className="bg-[#0D1117] min-h-screen font-mono text-[#E6EDF3]">
       {/* Top bar */}
       <div className="bg-[#161B22] border-b border-[#30363D] px-6 py-4 flex justify-between items-center">
-        <div>
-          <div className="text-[14px] text-[#238636]">// INVOICE</div>
-          <div className="text-[12px] text-[#58A6FF] opacity-80 mt-1 font-mono">const id = '{invoice.invoice_number}';</div>
+        <div className="flex items-center gap-3">
+          {hasLogo ? (
+            <LogoDisplay invoice={invoice} size={36} style={{ borderRadius: '6px' }} />
+          ) : (
+            <div className="text-[14px] text-[#238636]">// INVOICE</div>
+          )}
+          <div>
+            <div className="text-[12px] text-[#58A6FF] opacity-80 mt-1 font-mono">const id = '{invoice.invoice_number}';</div>
+          </div>
         </div>
         <div className="text-[12px] text-[#8B949E]">
           /* status: {invoice.status.toUpperCase()} */

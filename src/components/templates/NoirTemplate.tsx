@@ -2,6 +2,7 @@ import React from 'react';
 import { Invoice } from '../../store/invoiceStore';
 import { formatCurrency } from '../../utils/formatCurrency';
 import { formatDate } from '../../utils/formatDate';
+import LogoDisplay from './LogoDisplay';
 
 export default function NoirTemplate({ invoice }: { invoice: Invoice }) {
   const { business_snapshot: business, items } = invoice;
@@ -10,8 +11,9 @@ export default function NoirTemplate({ invoice }: { invoice: Invoice }) {
     <div className="bg-[#0A0A0A] min-h-screen font-sans text-[#F5F5F5] border-t-[2px] border-t-[#C4977A] border-b-[2px] border-b-[#C4977A] flex flex-col">
       {/* Header */}
       <div className="bg-[#0A0A0A] pt-10 pb-8 px-7 flex justify-between items-start">
-        <div>
-          <div className="text-[48px] font-[100] tracking-[8px] text-[#F5F5F5] italic leading-none">STATEMENT</div>
+        <div className="flex flex-col items-start">
+          <div className="text-[48px] font-[100] tracking-[8px] text-[#F5F5F5] italic leading-none mb-4">STATEMENT</div>
+          <LogoDisplay invoice={invoice} size={64} className="mb-3" style={{ filter: 'invert(1)', borderRadius: 0, border: '1px solid rgba(255,255,255,0.2)' }} />
           <div className="text-[12px] text-[#C4977A] uppercase tracking-[0.3em] mt-2">{business.business_name}</div>
         </div>
         <div className="text-right pt-2">

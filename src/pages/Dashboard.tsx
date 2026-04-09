@@ -38,6 +38,13 @@ export default function Dashboard() {
     variant: 'success'
   });
 
+  useEffect(() => {
+    document.body.style.backgroundColor = '#F9FAFB';
+    return () => {
+      document.body.style.backgroundColor = '#030712';
+    };
+  }, []);
+
   const loadData = () => {
     setInvoices(getInvoices());
   };

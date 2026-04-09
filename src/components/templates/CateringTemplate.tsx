@@ -2,9 +2,12 @@ import React from 'react';
 import { Invoice } from '../../store/invoiceStore';
 import { formatCurrency } from '../../utils/formatCurrency';
 import { formatDate } from '../../utils/formatDate';
+import LogoDisplay from './LogoDisplay';
+import { getLogo } from './LogoDisplay';
 
 export default function CateringTemplate({ invoice }: { invoice: Invoice }) {
   const { business_snapshot: business, items } = invoice;
+  const hasLogo = !!getLogo(invoice);
 
   return (
     <div className="bg-[#FFF8F0] min-h-screen font-sans text-[#450A0A] pb-6">
@@ -17,9 +20,13 @@ export default function CateringTemplate({ invoice }: { invoice: Invoice }) {
       {/* Chef header */}
       <div className="bg-white py-5 px-6 border-b-[2px] border-b-[#FEE2E2] flex justify-between items-center">
         <div className="flex items-center gap-4">
-          <div className="w-[56px] h-[56px] bg-[#FEE2E2] rounded-full flex items-center justify-center shrink-0 text-[32px]">
-            🎂
-          </div>
+          {hasLogo ? (
+            <LogoDisplay invoice={invoice} size={56} style={{ borderRadius: '50%', backgroundColor: '#FEE2E2' }} />
+          ) : (
+            <div className="w-[56px] h-[56px] bg-[#FEE2E2] rounded-full flex items-center justify-center shrink-0 text-[32px]">
+              🎂
+            </div>
+          )}
           <div>
             <div className="text-[18px] font-bold text-[#9B1C1C]">{business.business_name}</div>
             <div className="text-[12px] text-[#DC2626] mt-0.5">Culinary Services</div>

@@ -142,8 +142,8 @@ export default function InvoiceDetail() {
     }
   };
 
-  const getShareLink = () => {
-    const encoded = encodeInvoice(invoice);
+  const getShareLinkAsync = async () => {
+    const encoded = await encodeInvoice(invoice);
     return `${window.location.origin}/?invoice=${encoded}`;
   };
 
@@ -158,8 +158,9 @@ export default function InvoiceDetail() {
     }
   };
 
-  const handleCopyLink = () => {
-    navigator.clipboard.writeText(getShareLink());
+  const handleCopyLink = async () => {
+    const link = await getShareLinkAsync();
+    navigator.clipboard.writeText(link);
     setCopyLinkText('✓ Link Copied!');
     setTimeout(() => setCopyLinkText('📋 Copy Invoice Link'), 2000);
   };
@@ -199,7 +200,8 @@ export default function InvoiceDetail() {
   const totalFormatted = (invoice.total_amount / 100).toLocaleString('en-NG', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   const dueDateFormatted = new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }).format(new Date(invoice.due_date));
 
-  const getSendInvoiceMessage = () => {
+  const getSendInvoiceMessageAsync = async () => {
+    const link = await getShareLinkAsync();
     return `Hi ${invoice.client_name},
 
 Here is your invoice from ${invoice.business_snapshot.business_name}.
@@ -210,7 +212,7 @@ Here is your invoice from ${invoice.business_snapshot.business_name}.
 
 Tap the link below to view your full invoice 
 and payment details:
-${getShareLink()}
+${link}
 
 To pay:
 🏦 Bank: ${invoice.business_snapshot.bank_name}
@@ -221,7 +223,8 @@ Thank you for your business.
 — ${invoice.business_snapshot.business_name}`;
   };
 
-  const getReminderMessage = () => {
+  const getReminderMessageAsync = async () => {
+    const link = await getShareLinkAsync();
     return `Hi ${invoice.client_name},
 
 ⚠️ Friendly reminder: Invoice ${invoice.invoice_number} 
@@ -230,7 +233,7 @@ for ₦${totalFormatted} was due on ${dueDateFormatted}.
 Your payment is still outstanding.
 
 View invoice here:
-${getShareLink()}
+${link}
 
 To pay:
 🏦 Bank: ${invoice.business_snapshot.bank_name}
@@ -244,7 +247,7 @@ Thank you.
 — ${invoice.business_snapshot.business_name}`;
   };
 
-  const handleSendWhatsApp = () => {
+  const handleSendWhatsApp = async () => {
     if (!navigator.onLine) {
       setToast({ isVisible: true, message: "You're offline. Connect to the internet to send via WhatsApp.", variant: 'error' });
       
@@ -264,7 +267,7 @@ Thank you.
     setIsSending(true);
 
     const phone = cleanPhoneForWhatsApp(invoice.client_phone);
-    const message = getSendInvoiceMessage();
+    const message = await getSendInvoiceMessageAsync();
     const waLink = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
 
     const newWindow = window.open(waLink, '_blank');
@@ -283,7 +286,7 @@ Thank you.
     }, 500);
   };
 
-  const handleSendReminder = () => {
+  const handleSendReminder = async () => {
     if (!navigator.onLine) {
       setToast({ isVisible: true, message: "You're offline. Connect to the internet to send via WhatsApp.", variant: 'error' });
       
@@ -303,7 +306,7 @@ Thank you.
     setIsSending(true);
 
     const phone = cleanPhoneForWhatsApp(invoice.client_phone);
-    const message = getReminderMessage();
+    const message = await getReminderMessageAsync();
     const waLink = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
 
     const newWindow = window.open(waLink, '_blank');

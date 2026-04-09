@@ -2,6 +2,7 @@ import React from 'react';
 import { Invoice } from '../../store/invoiceStore';
 import { formatCurrency } from '../../utils/formatCurrency';
 import { formatDate } from '../../utils/formatDate';
+import LogoDisplay from './LogoDisplay';
 
 export default function EcommerceTemplate({ invoice }: { invoice: Invoice }) {
   const { business_snapshot: business, items } = invoice;
@@ -20,9 +21,12 @@ export default function EcommerceTemplate({ invoice }: { invoice: Invoice }) {
       {/* White header card */}
       <div className="bg-white m-3 rounded-xl shadow-sm p-5 border border-[#E2E8F0]">
         <div className="flex justify-between items-start mb-4">
-          <div>
-            <div className="text-[18px] font-bold text-[#0F172A]">{business.business_name}</div>
-            <div className="text-[12px] text-[#2563EB] font-medium mt-0.5">Online Store</div>
+          <div className="flex items-center gap-3">
+            <LogoDisplay invoice={invoice} size={40} style={{ borderRadius: '4px' }} />
+            <div>
+              <div className="text-[18px] font-bold text-[#0F172A]">{business.business_name}</div>
+              <div className="text-[12px] text-[#2563EB] font-medium mt-0.5">Online Store</div>
+            </div>
           </div>
           <div className="text-right">
             <div className="text-[10px] text-gray-400 uppercase tracking-wider font-bold">Order</div>
