@@ -230,7 +230,7 @@ export default function Dashboard() {
 
   const handleFabClick = () => {
     localStorage.setItem('invoiceflow_fab_visited', 'true');
-    setShowFabMenu(!showFabMenu);
+    navigate('/create');
   };
 
   const tabs: TabType[] = ['All', 'Overdue', 'Sent', 'Draft', 'Paid'];
@@ -704,8 +704,8 @@ export default function Dashboard() {
       {!isSelectionMode && (
         <button
           onClick={handleFabClick}
-          className={`fixed right-6 w-14 h-14 bg-primary-600 rounded-full flex items-center justify-center text-white shadow-[0_4px_16px_rgba(5,150,105,0.4)] hover:bg-primary-700 hover:scale-105 transition-all z-40 ${!hasVisited ? 'animate-pulse-ring' : ''}`}
-          style={{ bottom: 'calc(64px + 20px + env(safe-area-inset-bottom))' }}
+          className={`fixed right-6 w-14 h-14 bg-primary-600 rounded-full flex items-center justify-center text-white shadow-[0_4px_16px_rgba(5,150,105,0.4)] hover:bg-primary-700 hover:scale-105 active:scale-95 active:bg-primary-800 transition-all z-50 ${!hasVisited ? 'animate-pulse-ring' : ''}`}
+          style={{ bottom: 'calc(64px + 20px + env(safe-area-inset-bottom))', WebkitTapHighlightColor: 'transparent' }}
         >
           <span className="text-3xl font-light leading-none mb-1">+</span>
         </button>
