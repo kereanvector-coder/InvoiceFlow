@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useBusinessStore } from '../store/businessStore';
 import { getInvoices, updateInvoiceStatus, deleteInvoice, markInvoiceAsPaid, recordReminder, Invoice } from '../store/invoiceStore';
+import { getQuotations, Quotation } from '../store/quotationStore';
 import { formatCurrency } from '../utils/formatCurrency';
 import { formatDate } from '../utils/formatDate';
 import { Card, Button, EmptyState, FAB, Badge, Toast } from '../components/ui';
@@ -19,6 +20,8 @@ export default function Dashboard() {
   const { state: businessState } = useBusinessStore();
   
   const [invoices, setInvoices] = useState<Invoice[]>([]);
+  const [quotations, setQuotations] = useState<Quotation[]>([]);
+  const [showFabMenu, setShowFabMenu] = useState(false);
   const [activeTab, setActiveTab] = useState<TabType>('All');
   const [searchQuery, setSearchQuery] = useState('');
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
@@ -47,6 +50,7 @@ export default function Dashboard() {
 
   const loadData = () => {
     setInvoices(getInvoices());
+    setQuotations(getQuotations());
   };
 
   useEffect(() => {
@@ -226,7 +230,7 @@ export default function Dashboard() {
 
   const handleFabClick = () => {
     localStorage.setItem('invoiceflow_fab_visited', 'true');
-    navigate('/create');
+    setShowFabMenu(!showFabMenu);
   };
 
   const tabs: TabType[] = ['All', 'Overdue', 'Sent', 'Draft', 'Paid'];

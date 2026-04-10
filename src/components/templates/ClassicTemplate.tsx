@@ -1,12 +1,15 @@
 import React from 'react';
 import { Invoice } from '../../store/invoiceStore';
+import { Quotation } from '../../store/quotationStore';
+import { getDocumentDetails } from '../../utils/documentUtils';
 import { formatCurrency } from '../../utils/formatCurrency';
 import { formatDate } from '../../utils/formatDate';
 import LogoDisplay from './LogoDisplay';
 import { getLogo } from './LogoDisplay';
 
-export default function ClassicTemplate({ invoice }: { invoice: Invoice }) {
+export default function ClassicTemplate({ invoice }: { invoice: Invoice | Quotation }) {
   const { business_snapshot: business, items } = invoice;
+  const details = getDocumentDetails(invoice);
   const hasLogo = !!getLogo(invoice);
   const initials = business.business_name ? business.business_name.charAt(0).toUpperCase() : 'B';
   
@@ -16,8 +19,8 @@ export default function ClassicTemplate({ invoice }: { invoice: Invoice }) {
         {/* Header */}
         <div className="flex justify-between items-end border-b-2 border-[#2C3E50] pb-8 mb-8">
           <div>
-            <h1 className="text-4xl font-bold tracking-tight text-[#1A252F] mb-2">INVOICE</h1>
-            <p className="text-sm text-[#7F8C8D] tracking-widest uppercase font-mono">No. {invoice.invoice_number}</p>
+            <h1 className="text-4xl font-bold tracking-tight text-[#1A252F] mb-2">{details.documentTypeLabel}</h1>
+            <p className="text-sm text-[#7F8C8D] tracking-widest uppercase font-mono">No. {details.documentNumber}</p>
           </div>
           <div className="text-right flex flex-col items-end">
             {hasLogo ? (
@@ -48,11 +51,26 @@ export default function ClassicTemplate({ invoice }: { invoice: Invoice }) {
               <p className="text-sm font-medium text-[#2C3E50]">{formatDate(invoice.created_at)}</p>
             </div>
             <div>
-              <h3 className="text-xs font-bold text-[#7F8C8D] uppercase tracking-widest mb-3 border-b border-[#BDC3C7] pb-2">Due Date</h3>
-              <p className="text-sm font-medium text-[#2C3E50]">{formatDate(invoice.due_date)}</p>
+              <h3 className="text-xs font-bold text-[#7F8C8D] uppercase tracking-widest mb-3 border-b border-[#BDC3C7] pb-2">{details.dateLabel}</h3>
+              <p className="text-sm font-medium text-[#2C3E50]">{formatDate(details.dateValue)}</p>
             </div>
           </div>
         </div>
+
+        
+        {details.isQuote && details.projectTitle && (
+          <div className="bg-gray-50 border-l-4 border-gray-400 px-4 py-3 rounded-r-lg mb-6">
+            <div className="text-[10px] text-gray-500 uppercase tracking-[0.1em] font-bold mb-1">PROJECT</div>
+            <div className="text-[15px] text-gray-900 font-bold">
+              {details.projectTitle}
+            </div>
+            {details.projectDescription && (
+              <div className="text-[13px] text-gray-600 italic mt-1">
+                {details.projectDescription}
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Items Table */}
         <div className="mb-12">
@@ -92,7 +110,19 @@ export default function ClassicTemplate({ invoice }: { invoice: Invoice }) {
             </div>
           </div>
 
-          {/* Totals */}
+          
+        {details.isQuote && details.terms && (
+          <div className="mb-6">
+            <div className="text-[11px] text-gray-500 uppercase tracking-[0.1em] font-bold mb-2">TERMS & CONDITIONS</div>
+            <div className="bg-gray-50 p-3 rounded-md">
+              <div className="text-[13px] text-gray-600 whitespace-pre-wrap">
+                {details.terms}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Totals */}
           <div>
             <div className="border-t border-[#BDC3C7] pt-4 space-y-3 text-sm">
               <div className="flex justify-between text-[#34495E]">
@@ -106,7 +136,7 @@ export default function ClassicTemplate({ invoice }: { invoice: Invoice }) {
                 </div>
               )}
               <div className="flex justify-between items-center border-t-2 border-[#2C3E50] pt-4 mt-4">
-                <span className="text-lg font-bold text-[#2C3E50] uppercase tracking-widest">Total Due</span>
+                <span className="text-lg font-bold text-[#2C3E50] uppercase tracking-widest">{details.amountLabel}</span>
                 <span className="text-2xl font-bold text-[#2C3E50]">{formatCurrency(invoice.total_amount)}</span>
               </div>
             </div>

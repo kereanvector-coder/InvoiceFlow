@@ -1,11 +1,14 @@
 import React from 'react';
 import { Invoice } from '../../store/invoiceStore';
+import { Quotation } from '../../store/quotationStore';
+import { getDocumentDetails } from '../../utils/documentUtils';
 import { formatCurrency } from '../../utils/formatCurrency';
 import { formatDate } from '../../utils/formatDate';
 import LogoDisplay from './LogoDisplay';
 
-export default function ExecutiveTemplate({ invoice }: { invoice: Invoice }) {
+export default function ExecutiveTemplate({ invoice }: { invoice: Invoice | Quotation }) {
   const { business_snapshot: business, items } = invoice;
+  const details = getDocumentDetails(invoice);
 
   return (
     <div className="bg-[#1A1A1A] min-h-screen font-sans text-[#F5F0E8]">
@@ -24,7 +27,7 @@ export default function ExecutiveTemplate({ invoice }: { invoice: Invoice }) {
           <div className="border border-[#C9A84C] text-[#C9A84C] px-2 py-0.5 text-[10px] uppercase tracking-wider mb-2">
             {invoice.status}
           </div>
-          <div className="text-[14px] text-[#A09880] font-mono">{invoice.invoice_number}</div>
+          <div className="text-[14px] text-[#A09880] font-mono">{details.documentNumber}</div>
         </div>
       </div>
 
@@ -41,7 +44,7 @@ export default function ExecutiveTemplate({ invoice }: { invoice: Invoice }) {
           <div className="text-[9px] text-[#C9A84C] uppercase tracking-widest mb-1">Invoice Date</div>
           <div className="text-[14px] text-[#F5F0E8] mb-3">{formatDate(invoice.created_at)}</div>
           <div className="text-[9px] text-[#C9A84C] uppercase tracking-widest mb-1">Payment Due</div>
-          <div className="text-[14px] text-[#F5F0E8]">{formatDate(invoice.due_date)}</div>
+          <div className="text-[14px] text-[#F5F0E8]">{formatDate(details.dateValue)}</div>
         </div>
       </div>
 
@@ -52,7 +55,22 @@ export default function ExecutiveTemplate({ invoice }: { invoice: Invoice }) {
         <div className="w-[40px] h-[1px] bg-[#C9A84C]"></div>
       </div>
 
-      {/* Services table */}
+      
+        {details.isQuote && details.projectTitle && (
+          <div className="bg-gray-50 border-l-4 border-gray-400 px-4 py-3 rounded-r-lg mb-6">
+            <div className="text-[10px] text-gray-500 uppercase tracking-[0.1em] font-bold mb-1">PROJECT</div>
+            <div className="text-[15px] text-gray-900 font-bold">
+              {details.projectTitle}
+            </div>
+            {details.projectDescription && (
+              <div className="text-[13px] text-gray-600 italic mt-1">
+                {details.projectDescription}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Services table */}
       <div className="mx-7 mt-5">
         <div className="text-[9px] text-[#C9A84C] uppercase tracking-widest mb-1">Services Rendered</div>
         <div className="w-[40px] h-[1px] bg-[#C9A84C] mb-2"></div>

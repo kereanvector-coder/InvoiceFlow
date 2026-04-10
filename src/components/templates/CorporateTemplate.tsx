@@ -1,11 +1,14 @@
 import React from 'react';
 import { Invoice } from '../../store/invoiceStore';
+import { Quotation } from '../../store/quotationStore';
+import { getDocumentDetails } from '../../utils/documentUtils';
 import { formatCurrency } from '../../utils/formatCurrency';
 import { formatDate } from '../../utils/formatDate';
 import LogoDisplay from './LogoDisplay';
 
-export default function CorporateTemplate({ invoice }: { invoice: Invoice }) {
+export default function CorporateTemplate({ invoice }: { invoice: Invoice | Quotation }) {
   const { business_snapshot: business, items } = invoice;
+  const details = getDocumentDetails(invoice);
   
   return (
     <div className="bg-[#F8FAFC] min-h-screen font-sans text-[#0F172A]">
@@ -13,7 +16,7 @@ export default function CorporateTemplate({ invoice }: { invoice: Invoice }) {
       <div className="bg-[#1E3A5F] px-7 py-8 w-full">
         <div className="flex justify-between items-start">
           <div className="text-[11px] text-white uppercase tracking-[0.15em] opacity-80">
-            PROFESSIONAL SERVICES INVOICE
+            PROFESSIONAL SERVICES {details.documentTypeLabel}
           </div>
           <div className="border border-white text-white bg-[#1E3A5F] px-2 py-0.5 text-xs font-medium rounded-sm uppercase">
             {invoice.status}
@@ -22,16 +25,16 @@ export default function CorporateTemplate({ invoice }: { invoice: Invoice }) {
         
         <div className="flex justify-between items-end mt-4">
           <div>
-            <div className="text-[28px] font-bold text-white font-mono">{invoice.invoice_number}</div>
+            <div className="text-[28px] font-bold text-white font-mono">{details.documentNumber}</div>
             <div className="w-10 h-[3px] bg-[#C9A84C] mt-2"></div>
           </div>
           <div className="text-right text-white flex flex-col items-end">
             <LogoDisplay invoice={invoice} size={48} className="mb-3" style={{ border: '2px solid white', borderRadius: '8px' }} />
             <div className="text-[16px] font-bold">{business.business_name}</div>
-            <div className="text-[13px] opacity-80 mt-1">Invoice Date: {formatDate(invoice.created_at)}</div>
-            <div className="text-[13px] opacity-80">Due Date: {formatDate(invoice.due_date)}</div>
+            <div className="text-[13px] opacity-80 mt-1">Date: {formatDate(invoice.created_at)}</div>
+            <div className="text-[13px] opacity-80">{details.dateLabel}: {formatDate(details.dateValue)}</div>
             <div className="text-[13px] opacity-80 text-[#C9A84C] mt-1">
-              Payment Terms: Net {Math.max(0, Math.ceil((new Date(invoice.due_date).getTime() - new Date(invoice.created_at).getTime()) / (1000 * 60 * 60 * 24)))}
+              Payment Terms: Net {Math.max(0, Math.ceil((new Date(details.dateValue).getTime() - new Date(invoice.created_at).getTime()) / (1000 * 60 * 60 * 24)))}
             </div>
           </div>
         </div>
@@ -46,7 +49,7 @@ export default function CorporateTemplate({ invoice }: { invoice: Invoice }) {
             RE: {invoice.notes ? invoice.notes.split('\n')[0] : 'Professional Consulting Services'}
           </div>
           <div className="text-[12px] text-[#475569] mt-0.5">
-            Project Reference: <span className="font-mono">{invoice.invoice_number}</span>
+            Project Reference: <span className="font-mono">{details.documentNumber}</span>
           </div>
         </div>
 
@@ -69,6 +72,21 @@ export default function CorporateTemplate({ invoice }: { invoice: Invoice }) {
         </div>
 
         <div className="border-t border-dashed border-[#E2E8F0] my-6"></div>
+
+        
+        {details.isQuote && details.projectTitle && (
+          <div className="bg-gray-50 border-l-4 border-gray-400 px-4 py-3 rounded-r-lg mb-6">
+            <div className="text-[10px] text-gray-500 uppercase tracking-[0.1em] font-bold mb-1">PROJECT</div>
+            <div className="text-[15px] text-gray-900 font-bold">
+              {details.projectTitle}
+            </div>
+            {details.projectDescription && (
+              <div className="text-[13px] text-gray-600 italic mt-1">
+                {details.projectDescription}
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Services table */}
         <div className="mb-6">
@@ -97,6 +115,18 @@ export default function CorporateTemplate({ invoice }: { invoice: Invoice }) {
           </div>
         </div>
 
+        
+        {details.isQuote && details.terms && (
+          <div className="mb-6">
+            <div className="text-[11px] text-gray-500 uppercase tracking-[0.1em] font-bold mb-2">TERMS & CONDITIONS</div>
+            <div className="bg-gray-50 p-3 rounded-md">
+              <div className="text-[13px] text-gray-600 whitespace-pre-wrap">
+                {details.terms}
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Totals */}
         <div className="flex justify-end mb-6">
           <div className="bg-[#F8FAFC] border border-[#E2E8F0] rounded-lg p-4 min-w-[240px]">
@@ -112,7 +142,7 @@ export default function CorporateTemplate({ invoice }: { invoice: Invoice }) {
             )}
             <div className="border-t border-dashed border-[#E2E8F0] my-3"></div>
             <div className="bg-[#1E3A5F] -mx-4 -mb-4 p-3.5 rounded-b-lg flex justify-between items-center mt-2">
-              <span className="text-white font-bold text-[13px] uppercase">TOTAL DUE</span>
+              <span className="text-white font-bold text-[13px] uppercase">{details.amountLabel.toUpperCase()}</span>
               <span className="text-white font-bold text-[22px]">{formatCurrency(invoice.total_amount)}</span>
             </div>
           </div>

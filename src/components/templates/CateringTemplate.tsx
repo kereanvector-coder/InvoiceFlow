@@ -1,12 +1,15 @@
 import React from 'react';
 import { Invoice } from '../../store/invoiceStore';
+import { Quotation } from '../../store/quotationStore';
+import { getDocumentDetails } from '../../utils/documentUtils';
 import { formatCurrency } from '../../utils/formatCurrency';
 import { formatDate } from '../../utils/formatDate';
 import LogoDisplay from './LogoDisplay';
 import { getLogo } from './LogoDisplay';
 
-export default function CateringTemplate({ invoice }: { invoice: Invoice }) {
+export default function CateringTemplate({ invoice }: { invoice: Invoice | Quotation }) {
   const { business_snapshot: business, items } = invoice;
+  const details = getDocumentDetails(invoice);
   const hasLogo = !!getLogo(invoice);
 
   return (
@@ -33,7 +36,7 @@ export default function CateringTemplate({ invoice }: { invoice: Invoice }) {
           </div>
         </div>
         <div className="text-right">
-          <div className="text-[18px] font-bold text-[#450A0A] font-mono leading-none mb-2">#{invoice.invoice_number}</div>
+          <div className="text-[18px] font-bold text-[#450A0A] font-mono leading-none mb-2">#{details.documentNumber}</div>
           <div className="bg-[#FEE2E2] text-[#9B1C1C] px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider inline-block mb-1">
             {invoice.status}
           </div>
@@ -47,7 +50,7 @@ export default function CateringTemplate({ invoice }: { invoice: Invoice }) {
           <div className="text-[9px] text-[#92400E] uppercase tracking-wider font-bold mb-1">📅 Event / Service Details</div>
           <div className="text-[14px] font-bold text-[#450A0A]">{invoice.notes || 'Food Service / Catering'}</div>
         </div>
-        <div className="text-[13px] text-[#92400E] font-medium">Due: {formatDate(invoice.due_date)}</div>
+        <div className="text-[13px] text-[#92400E] font-medium">Due: {formatDate(details.dateValue)}</div>
       </div>
 
       {/* Red client+amount card */}
@@ -115,7 +118,19 @@ export default function CateringTemplate({ invoice }: { invoice: Invoice }) {
         </div>
       </div>
 
-      {/* Notes */}
+      
+        {details.isQuote && details.terms && (
+          <div className="mb-6">
+            <div className="text-[11px] text-gray-500 uppercase tracking-[0.1em] font-bold mb-2">TERMS & CONDITIONS</div>
+            <div className="bg-gray-50 p-3 rounded-md">
+              <div className="text-[13px] text-gray-600 whitespace-pre-wrap">
+                {details.terms}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Notes */}
       {invoice.notes && (
         <div className="mx-6 mt-3 bg-[#FEF3C7] rounded-[16px] p-3.5 px-4">
           <div className="text-[13px] text-[#92400E] font-bold mb-1">📝 Special Instructions</div>

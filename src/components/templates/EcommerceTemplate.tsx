@@ -1,11 +1,14 @@
 import React from 'react';
 import { Invoice } from '../../store/invoiceStore';
+import { Quotation } from '../../store/quotationStore';
+import { getDocumentDetails } from '../../utils/documentUtils';
 import { formatCurrency } from '../../utils/formatCurrency';
 import { formatDate } from '../../utils/formatDate';
 import LogoDisplay from './LogoDisplay';
 
-export default function EcommerceTemplate({ invoice }: { invoice: Invoice }) {
+export default function EcommerceTemplate({ invoice }: { invoice: Invoice | Quotation }) {
   const { business_snapshot: business, items } = invoice;
+  const details = getDocumentDetails(invoice);
 
   return (
     <div className="bg-[#F8FAFC] min-h-screen font-sans text-[#0F172A]">
@@ -30,7 +33,7 @@ export default function EcommerceTemplate({ invoice }: { invoice: Invoice }) {
           </div>
           <div className="text-right">
             <div className="text-[10px] text-gray-400 uppercase tracking-wider font-bold">Order</div>
-            <div className="text-[20px] font-bold text-[#2563EB] font-mono leading-tight">#{invoice.invoice_number}</div>
+            <div className="text-[20px] font-bold text-[#2563EB] font-mono leading-tight">#{details.documentNumber}</div>
             <div className="text-[13px] text-gray-500 mt-1">{formatDate(invoice.created_at)}</div>
           </div>
         </div>
@@ -48,7 +51,7 @@ export default function EcommerceTemplate({ invoice }: { invoice: Invoice }) {
             {invoice.status}
           </div>
           <div className="text-[#2563EB] text-[13px] font-medium">
-            Due: {formatDate(invoice.due_date)}
+            Due: {formatDate(details.dateValue)}
           </div>
         </div>
       </div>
@@ -117,7 +120,7 @@ export default function EcommerceTemplate({ invoice }: { invoice: Invoice }) {
             <div key={i} className="bg-black h-full" style={{ width: `${w}px` }}></div>
           ))}
         </div>
-        <div className="font-mono text-[11px] text-gray-600 tracking-widest">{invoice.invoice_number}-{new Date(invoice.created_at).getFullYear()}</div>
+        <div className="font-mono text-[11px] text-gray-600 tracking-widest">{details.documentNumber}-{new Date(invoice.created_at).getFullYear()}</div>
         <div className="text-[10px] text-gray-400 mt-2">Powered by InvoiceFlow</div>
       </div>
     </div>

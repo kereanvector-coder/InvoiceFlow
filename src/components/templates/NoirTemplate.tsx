@@ -1,11 +1,14 @@
 import React from 'react';
 import { Invoice } from '../../store/invoiceStore';
+import { Quotation } from '../../store/quotationStore';
+import { getDocumentDetails } from '../../utils/documentUtils';
 import { formatCurrency } from '../../utils/formatCurrency';
 import { formatDate } from '../../utils/formatDate';
 import LogoDisplay from './LogoDisplay';
 
-export default function NoirTemplate({ invoice }: { invoice: Invoice }) {
+export default function NoirTemplate({ invoice }: { invoice: Invoice | Quotation }) {
   const { business_snapshot: business, items } = invoice;
+  const details = getDocumentDetails(invoice);
 
   return (
     <div className="bg-[#0A0A0A] min-h-screen font-sans text-[#F5F5F5] border-t-[2px] border-t-[#C4977A] border-b-[2px] border-b-[#C4977A] flex flex-col">
@@ -17,7 +20,7 @@ export default function NoirTemplate({ invoice }: { invoice: Invoice }) {
           <div className="text-[12px] text-[#C4977A] uppercase tracking-[0.3em] mt-2">{business.business_name}</div>
         </div>
         <div className="text-right pt-2">
-          <div className="text-[11px] text-[#888888] font-mono mb-1">{invoice.invoice_number}</div>
+          <div className="text-[11px] text-[#888888] font-mono mb-1">{details.documentNumber}</div>
           <div className="text-[11px] text-[#888888]">{formatDate(invoice.created_at)}</div>
         </div>
       </div>
@@ -41,12 +44,27 @@ export default function NoirTemplate({ invoice }: { invoice: Invoice }) {
       <div className="px-7 pb-8">
         <div className="text-[9px] text-[#888888] uppercase tracking-widest mb-2">Total Remittance</div>
         <div className="text-[52px] font-bold text-[#F5F0E8] tracking-[-2px] leading-none">{formatCurrency(invoice.total_amount)}</div>
-        <div className="text-[13px] text-[#888888] mt-2">Due {formatDate(invoice.due_date)}</div>
+        <div className="text-[13px] text-[#888888] mt-2">Due {formatDate(details.dateValue)}</div>
       </div>
 
       <div className="h-px w-full bg-[#C4977A]"></div>
 
-      {/* Items */}
+      
+        {details.isQuote && details.projectTitle && (
+          <div className="bg-gray-50 border-l-4 border-gray-400 px-4 py-3 rounded-r-lg mb-6">
+            <div className="text-[10px] text-gray-500 uppercase tracking-[0.1em] font-bold mb-1">PROJECT</div>
+            <div className="text-[15px] text-gray-900 font-bold">
+              {details.projectTitle}
+            </div>
+            {details.projectDescription && (
+              <div className="text-[13px] text-gray-600 italic mt-1">
+                {details.projectDescription}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Items */}
       <div className="p-7 flex-1">
         <div className="text-[9px] text-[#C4977A] uppercase tracking-widest mb-1">Items</div>
         <div className="w-[24px] h-[1px] bg-[#C4977A] mb-4"></div>
@@ -66,6 +84,18 @@ export default function NoirTemplate({ invoice }: { invoice: Invoice }) {
           ))}
         </div>
         
+        
+        {details.isQuote && details.terms && (
+          <div className="mb-6">
+            <div className="text-[11px] text-gray-500 uppercase tracking-[0.1em] font-bold mb-2">TERMS & CONDITIONS</div>
+            <div className="bg-gray-50 p-3 rounded-md">
+              <div className="text-[13px] text-gray-600 whitespace-pre-wrap">
+                {details.terms}
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Totals */}
         <div className="flex flex-col items-end space-y-2 mb-8">
           <div className="flex justify-between w-48">

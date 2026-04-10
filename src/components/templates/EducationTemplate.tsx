@@ -1,12 +1,15 @@
 import React from 'react';
 import { Invoice } from '../../store/invoiceStore';
+import { Quotation } from '../../store/quotationStore';
+import { getDocumentDetails } from '../../utils/documentUtils';
 import { formatCurrency } from '../../utils/formatCurrency';
 import { formatDate } from '../../utils/formatDate';
 import LogoDisplay from './LogoDisplay';
 import { getLogo } from './LogoDisplay';
 
-export default function EducationTemplate({ invoice }: { invoice: Invoice }) {
+export default function EducationTemplate({ invoice }: { invoice: Invoice | Quotation }) {
   const { business_snapshot: business, items } = invoice;
+  const details = getDocumentDetails(invoice);
   const hasLogo = !!getLogo(invoice);
 
   return (
@@ -18,7 +21,7 @@ export default function EducationTemplate({ invoice }: { invoice: Invoice }) {
             <LogoDisplay invoice={invoice} size={64} style={{ borderRadius: '50%', border: '3px solid #DBEAFE' }} />
           ) : (
             <div className="w-[64px] h-[64px] bg-[#1D4ED8] border-[3px] border-[#DBEAFE] rounded-full flex items-center justify-center shrink-0">
-              <div className="text-white text-[10px] text-center font-bold leading-tight uppercase">Official<br/>Invoice</div>
+              <div className="text-white text-[10px] text-center font-bold leading-tight uppercase">Official<br/>{details.documentTypeLabel}</div>
             </div>
           )}
           <div>
@@ -28,7 +31,7 @@ export default function EducationTemplate({ invoice }: { invoice: Invoice }) {
         </div>
         <div className="text-right">
           <div className="text-[12px] text-gray-500 uppercase tracking-wider mb-1">Tuition Invoice</div>
-          <div className="text-[20px] font-bold text-[#1E3A8A] font-mono leading-none mb-1">#{invoice.invoice_number}</div>
+          <div className="text-[20px] font-bold text-[#1E3A8A] font-mono leading-none mb-1">#{details.documentNumber}</div>
           <div className="text-[13px] text-gray-500 mb-2">{formatDate(invoice.created_at)}</div>
           <div className="bg-[#DBEAFE] text-[#1D4ED8] px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider inline-block">
             {invoice.status}
@@ -45,7 +48,7 @@ export default function EducationTemplate({ invoice }: { invoice: Invoice }) {
         </div>
         <div className="text-right">
           <div className="text-[9px] text-[#1D4ED8] uppercase tracking-wider font-bold mb-1">Training Period</div>
-          <div className="text-[13px] text-[#1E3A8A] font-bold">{formatDate(invoice.created_at)} — {formatDate(invoice.due_date)}</div>
+          <div className="text-[13px] text-[#1E3A8A] font-bold">{formatDate(invoice.created_at)} — {formatDate(details.dateValue)}</div>
         </div>
       </div>
 
@@ -56,7 +59,7 @@ export default function EducationTemplate({ invoice }: { invoice: Invoice }) {
           <div className="text-[32px] font-bold text-white leading-none">{formatCurrency(invoice.total_amount)}</div>
         </div>
         <div className="text-right">
-          <div className="text-[12px] text-white/70 mb-1">Due: {formatDate(invoice.due_date)}</div>
+          <div className="text-[12px] text-white/70 mb-1">Due: {formatDate(details.dateValue)}</div>
         </div>
       </div>
 
@@ -91,7 +94,19 @@ export default function EducationTemplate({ invoice }: { invoice: Invoice }) {
         </div>
       </div>
 
-      {/* Notes */}
+      
+        {details.isQuote && details.terms && (
+          <div className="mb-6">
+            <div className="text-[11px] text-gray-500 uppercase tracking-[0.1em] font-bold mb-2">TERMS & CONDITIONS</div>
+            <div className="bg-gray-50 p-3 rounded-md">
+              <div className="text-[13px] text-gray-600 whitespace-pre-wrap">
+                {details.terms}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Notes */}
       {invoice.notes && (
         <div className="mx-6 mt-3 bg-white rounded-xl border border-[#BFDBFE] p-4">
           <div className="text-[13px] font-bold text-[#1E3A8A] mb-1">📋 Learning Notes & Objectives</div>

@@ -1,12 +1,15 @@
 import React from 'react';
 import { Invoice } from '../../store/invoiceStore';
+import { Quotation } from '../../store/quotationStore';
+import { getDocumentDetails } from '../../utils/documentUtils';
 import { formatCurrency } from '../../utils/formatCurrency';
 import { formatDate } from '../../utils/formatDate';
 import LogoDisplay from './LogoDisplay';
 import { getLogo } from './LogoDisplay';
 
-export default function TechTemplate({ invoice }: { invoice: Invoice }) {
+export default function TechTemplate({ invoice }: { invoice: Invoice | Quotation }) {
   const { business_snapshot: business, items } = invoice;
+  const details = getDocumentDetails(invoice);
   
   const getRelativeDateText = (dateString: string) => {
     const date = new Date(dateString);
@@ -23,7 +26,7 @@ export default function TechTemplate({ invoice }: { invoice: Invoice }) {
     return `in ${diffDays} days`;
   };
 
-  const isOverdue = invoice.status === 'overdue' || (new Date(invoice.due_date) < new Date() && invoice.status !== 'paid');
+  const isOverdue = invoice.status === 'overdue' || (new Date(details.dateValue) < new Date() && invoice.status !== 'paid');
   const hasLogo = !!getLogo(invoice);
 
   return (
@@ -37,7 +40,7 @@ export default function TechTemplate({ invoice }: { invoice: Invoice }) {
             <div className="text-[14px] text-[#238636]">// INVOICE</div>
           )}
           <div>
-            <div className="text-[12px] text-[#58A6FF] opacity-80 mt-1 font-mono">const id = '{invoice.invoice_number}';</div>
+            <div className="text-[12px] text-[#58A6FF] opacity-80 mt-1 font-mono">const id = '{details.documentNumber}';</div>
           </div>
         </div>
         <div className="text-[12px] text-[#8B949E]">
@@ -57,13 +60,13 @@ export default function TechTemplate({ invoice }: { invoice: Invoice }) {
             active
           </div>
           <div className="text-[12px] text-[#8B949E]">
-            due {getRelativeDateText(invoice.due_date)}
+            due {getRelativeDateText(details.dateValue)}
           </div>
         </div>
         
         <div className="bg-[#21262D] border border-[#30363D] rounded-md px-3 py-1.5 inline-block mt-4">
           <div className="text-[11px] text-[#58A6FF]">
-            invoice_id: '<span className="font-mono">{invoice.invoice_number}</span>' | issued: '{formatDate(invoice.created_at)}'
+            invoice_id: '<span className="font-mono">{details.documentNumber}</span>' | issued: '{formatDate(invoice.created_at)}'
           </div>
         </div>
       </div>
@@ -79,7 +82,7 @@ export default function TechTemplate({ invoice }: { invoice: Invoice }) {
           
           <div className="text-[11px] text-[#238636] mb-1">due_date:</div>
           <div className={`text-[13px] ${isOverdue ? 'text-red-400' : 'text-[#8B949E]'}`}>
-            '{formatDate(invoice.due_date)}'
+            '{formatDate(details.dateValue)}'
           </div>
         </div>
         
@@ -113,6 +116,18 @@ export default function TechTemplate({ invoice }: { invoice: Invoice }) {
             </div>
           </div>
         ))}
+
+        
+        {details.isQuote && details.terms && (
+          <div className="mb-6">
+            <div className="text-[11px] text-gray-500 uppercase tracking-[0.1em] font-bold mb-2">TERMS & CONDITIONS</div>
+            <div className="bg-gray-50 p-3 rounded-md">
+              <div className="text-[13px] text-gray-600 whitespace-pre-wrap">
+                {details.terms}
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Totals */}
         <div className="flex justify-end mt-4">

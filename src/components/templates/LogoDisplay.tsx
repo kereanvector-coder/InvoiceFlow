@@ -1,9 +1,10 @@
 import React from 'react';
 import { Invoice } from '../../store/invoiceStore';
+import { Quotation } from '../../store/quotationStore';
 
-export const getLogo = (invoice: Invoice | null | undefined): string | null => {
-  if (invoice?.business_snapshot?.business_logo) {
-    return invoice.business_snapshot.business_logo;
+export const getLogo = (document: Invoice | Quotation | null | undefined): string | null => {
+  if (document?.business_snapshot?.business_logo) {
+    return document.business_snapshot.business_logo;
   }
   
   try {
@@ -19,7 +20,7 @@ export const getLogo = (invoice: Invoice | null | undefined): string | null => {
 };
 
 interface LogoDisplayProps {
-  invoice: Invoice;
+  invoice: Invoice | Quotation;
   size?: number;
   className?: string;
   style?: React.CSSProperties;

@@ -1,11 +1,14 @@
 import React from 'react';
 import { Invoice } from '../../store/invoiceStore';
+import { Quotation } from '../../store/quotationStore';
+import { getDocumentDetails } from '../../utils/documentUtils';
 import { formatCurrency } from '../../utils/formatCurrency';
 import { formatDate } from '../../utils/formatDate';
 import LogoDisplay from './LogoDisplay';
 
-export default function CreativeTemplate({ invoice }: { invoice: Invoice }) {
+export default function CreativeTemplate({ invoice }: { invoice: Invoice | Quotation }) {
   const { business_snapshot: business, items } = invoice;
+  const details = getDocumentDetails(invoice);
 
   return (
     <div className="bg-[#FAF5FF] min-h-screen font-sans text-[#1E1B4B]">
@@ -28,10 +31,10 @@ export default function CreativeTemplate({ invoice }: { invoice: Invoice }) {
         
         <div className="flex justify-between items-end mt-6">
           <div className="bg-[#F59E0B] text-[#1E1B4B] px-3 py-1 rounded-full text-xs font-bold">
-            #{invoice.invoice_number}
+            #{details.documentNumber}
           </div>
           <div className="text-white/80 text-sm font-medium">
-            Due {formatDate(invoice.due_date)}
+            Due {formatDate(details.dateValue)}
           </div>
         </div>
       </div>

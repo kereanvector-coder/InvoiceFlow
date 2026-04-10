@@ -4,22 +4,22 @@ import { Button, Input, Textarea, Card } from './ui';
 import { Plus, Trash2, ArrowLeft, AlertCircle } from 'lucide-react';
 import { formatCurrency } from '../utils/formatCurrency';
 import { generateId } from '../utils/generateId';
-import { encodeInvoice } from '../utils/encodeInvoice';
+import { encodeQuotation } from '../utils/encodeQuotation';
 import { useBusinessStore } from '../store/businessStore';
-import { createInvoice, updateInvoice, getInvoiceById, Invoice } from '../store/invoiceStore';
+import { createQuotation, updateQuotation, getQuotationById, Quotation } from '../store/quotationStore';
 import TemplateThumbnail from './TemplateThumbnail';
 import { DictationButton } from './ui/DictationButton';
 
-interface InvoiceFormProps {
-  initialData?: Invoice;
+interface QuotationFormProps {
+  initialData?: Quotation;
   isReadOnly?: boolean;
 }
 
-export default function InvoiceForm({ initialData, isReadOnly = false }: InvoiceFormProps) {
+export default function QuotationForm({ initialData, isReadOnly = false }: QuotationFormProps) {
   const navigate = useNavigate();
   const { state: businessState } = useBusinessStore();
   
-  const [invoiceId, setInvoiceId] = useState<string | undefined>(initialData?.id);
+  const [quotationId, setQuotationId] = useState<string | undefined>(initialData?.id);
   const [isDirty, setIsDirty] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [errors, setErrors] = useState<any>({});
@@ -27,7 +27,9 @@ export default function InvoiceForm({ initialData, isReadOnly = false }: Invoice
   const [formData, setFormData] = useState({
     client_name: initialData?.client_name || '',
     client_phone: initialData?.client_phone || '',
-    template: initialData?.template || localStorage.getItem('invoiceflow_default_template') || 'corporate',
+    project_title: initialData?.project_title || '',
+    project_description: initialData?.project_description || '',
+    template: initialData?.template || localStorage.getItem('quotationflow_default_template') || 'corporate',
     items: initialData?.items.length ? initialData.items.map(i => ({
       id: i.id,
       description: i.description,
@@ -35,7 +37,8 @@ export default function InvoiceForm({ initialData, isReadOnly = false }: Invoice
       unit_price_ngn: (i.unit_price / 100).toString()
     })) : [{ id: generateId('ITM'), description: '', quantity: '1', unit_price_ngn: '' }],
     tax_rate: initialData?.tax_rate !== undefined ? (initialData.tax_rate * 100).toString() : '0',
-    due_date: initialData?.due_date ? initialData.due_date.split('T')[0] : '',
+    valid_until: initialData?.valid_until ? initialData.valid_until.split('T')[0] : new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+    terms: initialData?.terms || '',
     notes: initialData?.notes || ''
   });
 
@@ -66,7 +69,7 @@ export default function InvoiceForm({ initialData, isReadOnly = false }: Invoice
     if (isReadOnly) return;
     setFormData(prev => ({ 
       ...prev, 
-      [field]: prev[field as keyof typeof prev] ? `${prev[field as keyof typeof prev]} ${text}` : text 
+      [field]: prev[field as keyof typeof prev] ? `\${prev[field as keyof typeof prev]} \${text}` : text 
     }));
     setIsDirty(true);
     if (errors[field]) setErrors((prev: any) => ({ ...prev, [field]: undefined }));
@@ -111,48 +114,39 @@ export default function InvoiceForm({ initialData, isReadOnly = false }: Invoice
 
   const validate = () => {
     const newErrors: any = {};
-    if (!formData.client_name.trim()) newErrors.client_name = 'Required';
+    if (!formData.client_name) newErrors.client_name = 'Client name is required';
+    if (!formData.project_title) newErrors.project_title = 'Project title is required';
+    if (!formData.valid_until) newErrors.valid_until = 'Valid until date is required';
     
-    const phoneRegex = /^\+234\d{10}$/;
-    const formattedPhone = formatPhoneNumber(formData.client_phone);
-    if (!formattedPhone) newErrors.client_phone = 'Required';
-    else if (!phoneRegex.test(formattedPhone)) newErrors.client_phone = 'Must be +234XXXXXXXXXX';
-
-    if (!formData.due_date) newErrors.due_date = 'Required';
-    else {
-      // Allow today or future
-      const selectedDate = new Date(formData.due_date);
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      if (selectedDate < today) {
-        newErrors.due_date = 'Cannot be in the past';
-      }
-    }
-
     const itemsErrors: any[] = [];
-    let hasItemError = false;
+    let hasItemErrors = false;
+    
     formData.items.forEach((item, index) => {
-      const itemErr: any = {};
-      if (!item.description.trim()) itemErr.description = 'Required';
-      if (!item.quantity || Number(item.quantity) < 1) itemErr.quantity = 'Min 1';
-      if (!item.unit_price_ngn || Number(item.unit_price_ngn) < 0) itemErr.unit_price_ngn = 'Required';
-      itemsErrors[index] = itemErr;
-      if (Object.keys(itemErr).length > 0) hasItemError = true;
+      const itemError: any = {};
+      if (!item.description) { itemError.description = 'Required'; hasItemErrors = true; }
+      if (!item.quantity || Number(item.quantity) <= 0) { itemError.quantity = 'Invalid'; hasItemErrors = true; }
+      if (!item.unit_price_ngn || Number(item.unit_price_ngn) < 0) { itemError.unit_price_ngn = 'Invalid'; hasItemErrors = true; }
+      itemsErrors[index] = itemError;
     });
-
-    if (hasItemError) newErrors.items = itemsErrors;
-    if (formData.items.length === 0) newErrors.general = 'At least 1 item required';
+    
+    if (hasItemErrors) newErrors.items = itemsErrors;
+    
+    if (!businessState.profile?.business_name) {
+      newErrors.general = 'Please complete your business profile in Settings first.';
+    }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const buildInvoiceData = (): Partial<Invoice> => {
+  const buildQuotationData = () => {
     return {
-      business_snapshot: businessState.profile!,
       client_name: formData.client_name,
-      client_phone: formatPhoneNumber(formData.client_phone),
+      client_phone: formData.client_phone,
+      project_title: formData.project_title,
+      project_description: formData.project_description,
       template: formData.template,
+      business_snapshot: businessState.profile!,
       items: formData.items.map(i => ({
         id: i.id,
         description: i.description,
@@ -160,9 +154,10 @@ export default function InvoiceForm({ initialData, isReadOnly = false }: Invoice
         unit_price: Math.round((Number(i.unit_price_ngn) || 0) * 100)
       })),
       tax_rate: (Number(formData.tax_rate) || 0) / 100,
-      due_date: formData.due_date ? new Date(formData.due_date).toISOString() : new Date().toISOString(),
+      valid_until: formData.valid_until ? new Date(formData.valid_until).toISOString() : new Date().toISOString(),
+      terms: formData.terms,
       notes: formData.notes,
-      status: initialData?.status || 'draft'
+      status: initialData?.status || 'draft' as const
     };
   };
 
@@ -171,13 +166,13 @@ export default function InvoiceForm({ initialData, isReadOnly = false }: Invoice
     if (!isAuto) setIsSaving(true);
     
     try {
-      const data = buildInvoiceData();
-      if (invoiceId) {
-        updateInvoice(invoiceId, data);
+      const data = buildQuotationData();
+      if (quotationId) {
+        updateQuotation(quotationId, data);
       } else {
-        const newInv = createInvoice(data);
-        setInvoiceId(newInv.id);
-        window.history.replaceState(null, '', `/edit/${newInv.id}`);
+        const newInv = createQuotation(data);
+        setQuotationId(newInv.id);
+        window.history.replaceState(null, '', `/app/quotation/\${newInv.id}/edit`);
       }
       setIsDirty(false);
     } catch (err) {
@@ -193,20 +188,20 @@ export default function InvoiceForm({ initialData, isReadOnly = false }: Invoice
     
     setIsSaving(true);
     try {
-      const data = buildInvoiceData();
-      let savedId = invoiceId;
-      if (invoiceId) {
-        updateInvoice(invoiceId, data);
+      const data = buildQuotationData();
+      let savedId = quotationId;
+      if (quotationId) {
+        updateQuotation(quotationId, data);
       } else {
-        const newInv = createInvoice(data);
+        const newInv = createQuotation(data);
         savedId = newInv.id;
-        setInvoiceId(savedId);
+        setQuotationId(savedId);
       }
       setIsDirty(false);
       
-      const fullInvoice = getInvoiceById(savedId!);
-      if (fullInvoice) {
-        navigate(`/invoice/${savedId}`);
+      const fullQuotation = getQuotationById(savedId!);
+      if (fullQuotation) {
+        navigate(`/app/quotation/\${savedId}`);
       }
     } catch (err) {
       console.error(err);
@@ -265,14 +260,14 @@ export default function InvoiceForm({ initialData, isReadOnly = false }: Invoice
           <ArrowLeft className="w-5 h-5" />
         </Button>
         <h1 className="text-h2 text-neutral-900 dark:text-neutral-50">
-          {isReadOnly ? 'View Invoice' : invoiceId ? 'Edit Invoice' : 'Create Invoice'}
+          {isReadOnly ? 'View Quotation' : quotationId ? 'Edit Quotation' : 'Create Quotation'}
         </h1>
       </div>
 
       {isReadOnly && (
         <div className="mb-6 p-4 bg-info/10 text-info rounded-md flex items-center">
           <AlertCircle className="w-5 h-5 mr-2" />
-          This invoice has been paid and cannot be edited.
+          This quotation has been accepted and cannot be edited.
         </div>
       )}
 
@@ -283,13 +278,13 @@ export default function InvoiceForm({ initialData, isReadOnly = false }: Invoice
         </div>
       )}
 
-      <Card className="space-y-8">
+      <Card className="space-y-8 p-5">
         {/* Client Details */}
         <section>
           <h2 className="text-h3 mb-4 text-neutral-800 dark:text-neutral-50">Client Details</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Input 
-              label="Client Name" 
+              label="Client Name *" 
               name="client_name"
               value={formData.client_name}
               onChange={handleChange}
@@ -307,6 +302,44 @@ export default function InvoiceForm({ initialData, isReadOnly = false }: Invoice
               disabled={isReadOnly}
               placeholder="+234 800 000 0000"
             />
+          </div>
+        </section>
+
+        {/* Project Details */}
+        <section>
+          <h2 className="text-h3 mb-4 text-neutral-800 dark:text-neutral-50">Project Details</h2>
+          <div className="space-y-4">
+            <div className="relative">
+              <Input 
+                label="Project Title *" 
+                name="project_title"
+                value={formData.project_title}
+                onChange={handleChange}
+                error={errors.project_title}
+                disabled={isReadOnly}
+                style={{ paddingRight: '3rem' }}
+              />
+              {!isReadOnly && (
+                <div className="absolute right-2 top-1/2 -translate-y-1/2">
+                  <DictationButton onResult={(text) => handleDictation('project_title', text)} />
+                </div>
+              )}
+            </div>
+            <div className="relative">
+              <Textarea 
+                label="Project Description" 
+                name="project_description"
+                value={formData.project_description}
+                onChange={handleChange}
+                disabled={isReadOnly}
+                style={{ paddingRight: '3rem' }}
+              />
+              {!isReadOnly && (
+                <div className="absolute right-2 top-2">
+                  <DictationButton onResult={(text) => handleDictation('project_description', text)} />
+                </div>
+              )}
+            </div>
           </div>
         </section>
 
@@ -331,7 +364,7 @@ export default function InvoiceForm({ initialData, isReadOnly = false }: Invoice
                   {!isReadOnly && (
                     <div className="absolute right-2 top-1/2 -translate-y-1/2">
                       <DictationButton onResult={(text) => {
-                        const newDesc = item.description ? `${item.description} ${text}` : text;
+                        const newDesc = item.description ? `\${item.description} \${text}` : text;
                         updateItem(index, 'description', newDesc);
                       }} />
                     </div>
@@ -388,17 +421,17 @@ export default function InvoiceForm({ initialData, isReadOnly = false }: Invoice
           )}
         </section>
 
-        {/* Invoice Details */}
+        {/* Quotation Details */}
         <section>
-          <h2 className="text-h3 mb-4 text-neutral-800 dark:text-neutral-50">Invoice Details</h2>
+          <h2 className="text-h3 mb-4 text-neutral-800 dark:text-neutral-50">Quote Settings</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Input 
-              label="Due Date" 
+              label="Valid Until *" 
               type="date" 
-              name="due_date"
-              value={formData.due_date}
+              name="valid_until"
+              value={formData.valid_until}
               onChange={handleChange}
-              error={errors.due_date}
+              error={errors.valid_until}
               disabled={isReadOnly}
             />
             <Input 
@@ -414,21 +447,39 @@ export default function InvoiceForm({ initialData, isReadOnly = false }: Invoice
               disabled={isReadOnly}
             />
           </div>
-          <div className="mt-4 relative">
-            <Textarea 
-              label="Notes (Optional)" 
-              name="notes"
-              value={formData.notes}
-              onChange={handleChange}
-              disabled={isReadOnly}
-              placeholder="Thank you for your business!"
-              style={{ paddingRight: '3rem' }}
-            />
-            {!isReadOnly && (
-              <div className="absolute right-2 top-2">
-                <DictationButton onResult={(text) => handleDictation('notes', text)} />
-              </div>
-            )}
+          <div className="mt-4 space-y-4">
+            <div className="relative">
+              <Textarea 
+                label="Payment Terms" 
+                name="terms"
+                value={formData.terms}
+                onChange={handleChange}
+                disabled={isReadOnly}
+                placeholder="e.g. 50% upfront, 50% on delivery."
+                style={{ paddingRight: '3rem' }}
+              />
+              {!isReadOnly && (
+                <div className="absolute right-2 top-2">
+                  <DictationButton onResult={(text) => handleDictation('terms', text)} />
+                </div>
+              )}
+            </div>
+            <div className="relative">
+              <Textarea 
+                label="Notes (Optional)" 
+                name="notes"
+                value={formData.notes}
+                onChange={handleChange}
+                disabled={isReadOnly}
+                placeholder="Thank you for your business!"
+                style={{ paddingRight: '3rem' }}
+              />
+              {!isReadOnly && (
+                <div className="absolute right-2 top-2">
+                  <DictationButton onResult={(text) => handleDictation('notes', text)} />
+                </div>
+              )}
+            </div>
           </div>
         </section>
 
@@ -453,11 +504,11 @@ export default function InvoiceForm({ initialData, isReadOnly = false }: Invoice
               <div 
                 key={tpl.id}
                 onClick={() => !isReadOnly && setFormData(prev => ({ ...prev, template: tpl.id }))}
-                className={`p-3 sm:p-4 rounded-xl border-2 cursor-pointer transition-all flex flex-col sm:flex-row items-center sm:items-start gap-3 sm:gap-4 ${
+                className={`p-3 sm:p-4 rounded-xl border-2 cursor-pointer transition-all flex flex-col sm:flex-row items-center sm:items-start gap-3 sm:gap-4 \${
                   formData.template === tpl.id 
                     ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/20' 
                     : 'border-border bg-surface hover:border-primary-300'
-                } ${isReadOnly ? 'opacity-70 cursor-not-allowed' : ''}`}
+                } \${isReadOnly ? 'opacity-70 cursor-not-allowed' : ''}`}
               >
                 <TemplateThumbnail templateId={tpl.id} />
                 <div className="text-center sm:text-left flex-1">
@@ -496,7 +547,7 @@ export default function InvoiceForm({ initialData, isReadOnly = false }: Invoice
             Save as Draft
           </Button>
           <Button onClick={handleReview} isLoading={isSaving} className="flex-1 sm:flex-none">
-            Review Invoice
+            Preview Quote
           </Button>
         </div>
       )}

@@ -1,11 +1,14 @@
 import React from 'react';
 import { Invoice } from '../../store/invoiceStore';
+import { Quotation } from '../../store/quotationStore';
+import { getDocumentDetails } from '../../utils/documentUtils';
 import { formatCurrency } from '../../utils/formatCurrency';
 import { formatDate } from '../../utils/formatDate';
 import LogoDisplay from './LogoDisplay';
 
-export default function WellnessTemplate({ invoice }: { invoice: Invoice }) {
+export default function WellnessTemplate({ invoice }: { invoice: Invoice | Quotation }) {
   const { business_snapshot: business, items } = invoice;
+  const details = getDocumentDetails(invoice);
 
   return (
     <div className="bg-[#F0FDF9] min-h-screen font-sans text-[#134E4A] pb-6">
@@ -23,7 +26,7 @@ export default function WellnessTemplate({ invoice }: { invoice: Invoice }) {
             <div className="bg-white text-[#0D9488] px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider mb-1 inline-block">
               {invoice.status}
             </div>
-            <div className="text-[13px] text-white/70 block">{invoice.invoice_number}</div>
+            <div className="text-[13px] text-white/70 block">{details.documentNumber}</div>
           </div>
         </div>
       </div>
@@ -35,7 +38,7 @@ export default function WellnessTemplate({ invoice }: { invoice: Invoice }) {
           <div className="text-[28px] font-bold text-[#134E4A] leading-none">{formatCurrency(invoice.total_amount)}</div>
         </div>
         <div className="text-right">
-          <div className="text-[12px] text-gray-500 mb-1">Due: {formatDate(invoice.due_date)}</div>
+          <div className="text-[12px] text-gray-500 mb-1">Due: {formatDate(details.dateValue)}</div>
         </div>
       </div>
 
@@ -93,7 +96,19 @@ export default function WellnessTemplate({ invoice }: { invoice: Invoice }) {
         </div>
       </div>
 
-      {/* Notes */}
+      
+        {details.isQuote && details.terms && (
+          <div className="mb-6">
+            <div className="text-[11px] text-gray-500 uppercase tracking-[0.1em] font-bold mb-2">TERMS & CONDITIONS</div>
+            <div className="bg-gray-50 p-3 rounded-md">
+              <div className="text-[13px] text-gray-600 whitespace-pre-wrap">
+                {details.terms}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Notes */}
       {invoice.notes && (
         <div className="mx-6 mt-3 bg-[#CCFBF1] rounded-[16px] p-3.5 px-4">
           <div className="text-[12px] text-[#134E4A] font-bold mb-1">📋 Notes</div>

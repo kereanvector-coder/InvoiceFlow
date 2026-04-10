@@ -1,22 +1,26 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Home, FileText, BarChart2, Settings } from 'lucide-react';
+import { Home, FileText, BarChart2, Settings, FileSignature } from 'lucide-react';
 import { getInvoices } from '../store/invoiceStore';
+import { getQuotations } from '../store/quotationStore';
 
 export function BottomNav() {
   const navigate = useNavigate();
   const location = useLocation();
   const invoices = getInvoices();
+  const quotations = getQuotations();
   const overdueCount = invoices.filter(i => i.status === 'overdue').length;
+  const pendingQuotesCount = quotations.filter(q => q.status === 'sent').length;
 
   const tabs = [
     { id: 'home', path: '/app', icon: Home, label: 'Home' },
     { id: 'invoices', path: '/invoices', icon: FileText, label: 'Invoices', badge: overdueCount },
+    { id: 'quotes', path: '/app/quotations', icon: FileSignature, label: 'Quotes', badge: pendingQuotesCount },
     { id: 'summary', path: '/summary', icon: BarChart2, label: 'Summary' },
     { id: 'settings', path: '/setup', icon: Settings, label: 'Settings' },
   ];
 
-  const showNav = ['/app', '/invoices', '/summary', '/setup'].includes(location.pathname);
+  const showNav = ['/app', '/invoices', '/app/quotations', '/summary', '/setup'].includes(location.pathname);
   if (!showNav) return null;
 
   return (

@@ -9,6 +9,10 @@ import EditInvoice from './pages/EditInvoice';
 import InvoiceDetail from './pages/InvoiceDetail';
 import FinancialSummary from './pages/FinancialSummary';
 import InvoiceHistory from './pages/InvoiceHistory';
+import QuotationsList from './pages/QuotationsList';
+import CreateQuotation from './pages/CreateQuotation';
+import EditQuotation from './pages/EditQuotation';
+import QuotationDetail from './pages/QuotationDetail';
 import { BottomNav } from './components/BottomNav';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { PWAHandler } from './components/PWAHandler';
@@ -36,9 +40,13 @@ function RootHandler() {
   // Synchronous check for invoice data in URL
   const params = new URLSearchParams(window.location.search);
   const invoiceData = params.get('invoice');
+  const quoteData = params.get('quote');
   
   if (invoiceData) {
     return <Navigate to={`/invoice/shared?data=${encodeURIComponent(invoiceData)}`} replace />;
+  }
+  if (quoteData) {
+    return <Navigate to={`/app/quotation/shared?quote=${encodeURIComponent(quoteData)}`} replace />;
   }
 
   if (!state.isLoaded) return null;
@@ -77,9 +85,13 @@ const router = createBrowserRouter([
           { path: "/edit/:id", element: <EditInvoice /> },
           { path: "/summary", element: <FinancialSummary /> },
           { path: "/invoices", element: <InvoiceHistory /> },
+          { path: "/app/quotations", element: <QuotationsList /> },
+          { path: "/app/quotation/new", element: <CreateQuotation /> },
+          { path: "/app/quotation/:id/edit", element: <EditQuotation /> },
         ]
       },
-      { path: "/invoice/:id", element: <InvoiceDetail /> }
+      { path: "/invoice/:id", element: <InvoiceDetail /> },
+      { path: "/app/quotation/:id", element: <QuotationDetail /> }
     ]
   }
 ]);

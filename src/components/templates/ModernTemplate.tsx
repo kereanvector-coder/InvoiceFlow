@@ -1,11 +1,14 @@
 import React from 'react';
 import { Invoice } from '../../store/invoiceStore';
+import { Quotation } from '../../store/quotationStore';
+import { getDocumentDetails } from '../../utils/documentUtils';
 import { formatCurrency } from '../../utils/formatCurrency';
 import { formatDate } from '../../utils/formatDate';
 import LogoDisplay from './LogoDisplay';
 
-export default function ModernTemplate({ invoice }: { invoice: Invoice }) {
+export default function ModernTemplate({ invoice }: { invoice: Invoice | Quotation }) {
   const { business_snapshot: business, items } = invoice;
+  const details = getDocumentDetails(invoice);
   
   const subtotal = items.reduce((sum, item) => sum + (item.quantity * item.unit_price), 0);
   const taxAmount = Math.round(subtotal * invoice.tax_rate);
@@ -24,10 +27,10 @@ export default function ModernTemplate({ invoice }: { invoice: Invoice }) {
             <p className="text-neutral-500 text-sm mt-1">{business.phone_number}</p>
           </div>
           <div className="sm:text-right">
-            <div className="text-emerald-500 font-semibold tracking-widest uppercase text-sm mb-1">Invoice</div>
-            <div className="text-white text-xl font-mono">{invoice.invoice_number}</div>
+            <div className="text-emerald-500 font-semibold tracking-widest uppercase text-sm mb-1">{details.documentTypeLabel}</div>
+            <div className="text-white text-xl font-mono">{details.documentNumber}</div>
             <div className="text-neutral-500 text-sm mt-3">Date: {formatDate(invoice.created_at)}</div>
-            <div className="text-neutral-500 text-sm">Due: {formatDate(invoice.due_date)}</div>
+            <div className="text-neutral-500 text-sm">Due: {formatDate(details.dateValue)}</div>
           </div>
         </div>
 
@@ -64,6 +67,21 @@ export default function ModernTemplate({ invoice }: { invoice: Invoice }) {
           </div>
         </div>
 
+        
+        {details.isQuote && details.projectTitle && (
+          <div className="bg-gray-50 border-l-4 border-gray-400 px-4 py-3 rounded-r-lg mb-6">
+            <div className="text-[10px] text-gray-500 uppercase tracking-[0.1em] font-bold mb-1">PROJECT</div>
+            <div className="text-[15px] text-gray-900 font-bold">
+              {details.projectTitle}
+            </div>
+            {details.projectDescription && (
+              <div className="text-[13px] text-gray-600 italic mt-1">
+                {details.projectDescription}
+              </div>
+            )}
+          </div>
+        )}
+
         {/* Items */}
         <div className="p-6 sm:p-10">
           <div className="overflow-x-auto">
@@ -89,7 +107,19 @@ export default function ModernTemplate({ invoice }: { invoice: Invoice }) {
             </table>
           </div>
 
-          {/* Totals */}
+          
+        {details.isQuote && details.terms && (
+          <div className="mb-6">
+            <div className="text-[11px] text-gray-500 uppercase tracking-[0.1em] font-bold mb-2">TERMS & CONDITIONS</div>
+            <div className="bg-gray-50 p-3 rounded-md">
+              <div className="text-[13px] text-gray-600 whitespace-pre-wrap">
+                {details.terms}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Totals */}
           <div className="mt-8 flex justify-end">
             <div className="w-full sm:w-72 space-y-3">
               <div className="flex justify-between text-sm text-neutral-400">

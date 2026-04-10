@@ -1,5 +1,5 @@
 {
-  "name": "",
-  "description": "",
-  "requestFramePermissions": []
+  "name": "InvoiceFlow",
+  "description": "Create professional invoices in 60 seconds, send via WhatsApp, and track payments — free for Nigerian freelancers.",
+  "requestFramePermissions": ["microphone"]
 }

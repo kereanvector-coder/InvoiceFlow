@@ -1,18 +1,21 @@
 import React from 'react';
 import { Invoice } from '../../store/invoiceStore';
+import { Quotation } from '../../store/quotationStore';
+import { getDocumentDetails } from '../../utils/documentUtils';
 import { formatCurrency } from '../../utils/formatCurrency';
 import { formatDate } from '../../utils/formatDate';
 import LogoDisplay from './LogoDisplay';
 
-export default function TradesTemplate({ invoice }: { invoice: Invoice }) {
+export default function TradesTemplate({ invoice }: { invoice: Invoice | Quotation }) {
   const { business_snapshot: business, items } = invoice;
+  const details = getDocumentDetails(invoice);
 
   return (
     <div className="bg-[#1C1917] min-h-screen font-sans text-[#FEF3C7] pb-6">
       {/* Orange ID bar */}
       <div className="bg-[#EA580C] py-2 px-5 flex justify-between items-center">
         <div className="text-[12px] text-white font-bold">⚙ JOB INVOICE</div>
-        <div className="text-[12px] text-white font-mono">{invoice.invoice_number}</div>
+        <div className="text-[12px] text-white font-mono">{details.documentNumber}</div>
       </div>
 
       {/* Dark header */}
