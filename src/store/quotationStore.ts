@@ -1,10 +1,11 @@
-import { InvoiceItem, BusinessSnapshot, createInvoice } from './invoiceStore';
+import { InvoiceItem, createInvoice } from './invoiceStore';
+import { BusinessProfile } from './businessStore';
 
 export interface Quotation {
   id: string;
   quote_number: string;
   template: string;
-  business_snapshot: BusinessSnapshot;
+  business_snapshot: BusinessProfile;
   client_name: string;
   client_phone: string;
   project_title: string;

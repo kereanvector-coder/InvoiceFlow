@@ -13,6 +13,8 @@ import QuotationsList from './pages/QuotationsList';
 import CreateQuotation from './pages/CreateQuotation';
 import EditQuotation from './pages/EditQuotation';
 import QuotationDetail from './pages/QuotationDetail';
+import ExpensesScreen from './pages/Expenses';
+import LogExpenseScreen from './pages/LogExpense';
 import { BottomNav } from './components/BottomNav';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { PWAHandler } from './components/PWAHandler';
@@ -88,6 +90,9 @@ const router = createBrowserRouter([
           { path: "/app/quotations", element: <QuotationsList /> },
           { path: "/app/quotation/new", element: <CreateQuotation /> },
           { path: "/app/quotation/:id/edit", element: <EditQuotation /> },
+          { path: "/expenses", element: <ExpensesScreen /> },
+          { path: "/log-expense", element: <LogExpenseScreen /> },
+          { path: "/edit-expense/:id", element: <LogExpenseScreen /> },
         ]
       },
       { path: "/invoice/:id", element: <InvoiceDetail /> },

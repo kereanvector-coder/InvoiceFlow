@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { ChevronLeft, ChevronRight, BarChart3 } from 'lucide-react';
 import { getInvoices, Invoice } from '../store/invoiceStore';
 import { getQuotations, Quotation } from '../store/quotationStore';
+import { getExpenses, EXPENSE_CATEGORIES } from '../store/expenseStore';
 
 const MONTHS = [
   'January', 'February', 'March', 'April', 'May', 'June',
@@ -31,8 +32,8 @@ const getPaidForMonth = (invoices: Invoice[], month: number, year: number) => {
   });
 };
 
-const sumAmount = (invoiceArray: Invoice[]) => {
-  const sumKobo = invoiceArray.reduce((sum, inv) => sum + inv.total_amount, 0);
+const sumAmount = (items: { total_amount: number }[]) => {
+  const sumKobo = items.reduce((sum, item) => sum + item.total_amount, 0);
   return sumKobo / 100;
 };
 
@@ -57,6 +58,7 @@ export default function FinancialSummary() {
   const navigate = useNavigate();
   const allInvoices = useMemo(() => getInvoices(), []);
   const allQuotations = useMemo(() => getQuotations(), []);
+  const allExpenses = useMemo(() => getExpenses(), []);
   
   const currentDate = new Date();
   const [selectedMonth, setSelectedMonth] = useState(currentDate.getMonth());
@@ -152,6 +154,37 @@ export default function FinancialSummary() {
     draft: 'Draft'
   };
 
+  // Expenses & Profit Calculations
+  const expensesThisMonth = allExpenses.filter(exp => {
+    const d = new Date(exp.date);
+    return d.getMonth() === selectedMonth && d.getFullYear() === selectedYear;
+  });
+  
+  const totalExpensesThisMonth = expensesThisMonth.reduce((sum, exp) => sum + exp.amount, 0);
+  const netProfitThisMonth = totalEarned - totalExpensesThisMonth;
+  const profitMargin = totalEarned > 0 ? Math.round((netProfitThisMonth / totalEarned) * 100) : 0;
+
+  const expenseCategoryBreakdown = useMemo(() => {
+    const breakdown: Record<string, number> = {};
+    expensesThisMonth.forEach(exp => {
+      breakdown[exp.category] = (breakdown[exp.category] || 0) + exp.amount;
+    });
+    return Object.entries(breakdown)
+      .map(([catId, amount]) => {
+        const catDef = EXPENSE_CATEGORIES.find(c => c.id === catId);
+        return {
+          id: catId,
+          label: catDef?.label || 'Other',
+          emoji: catDef?.emoji || '📝',
+          color: catDef?.color || '#9CA3AF',
+          amount,
+          percentage: totalExpensesThisMonth > 0 ? (amount / totalExpensesThisMonth) * 100 : 0
+        };
+      })
+      .sort((a, b) => b.amount - a.amount)
+      .slice(0, 3); // Top 3 only
+  }, [expensesThisMonth, totalExpensesThisMonth]);
+
   // Section 3 Calculations
   const clientTotals: Record<string, { count: number, amount: number, statuses: string[] }> = {};
   invoicesThisMonth.forEach(inv => {
@@ -172,6 +205,10 @@ export default function FinancialSummary() {
   const ytdInvoiced = sumAmount(invoicesThisYear);
   const ytdCollected = sumAmount(invoicesThisYear.filter(inv => inv.status === 'paid'));
   const ytdOverdue = sumAmount(invoicesThisYear.filter(inv => inv.status === 'overdue'));
+  
+  const expensesThisYear = allExpenses.filter(exp => new Date(exp.date).getFullYear() === currentDate.getFullYear());
+  const ytdExpenses = expensesThisYear.reduce((sum, exp) => sum + exp.amount, 0);
+  const ytdNetProfit = ytdCollected - ytdExpenses;
   
   const monthlyTotals = new Array(12).fill(0);
   allInvoices.forEach(inv => {
@@ -342,6 +379,77 @@ export default function FinancialSummary() {
         </div>
       </div>
 
+      {/* 4.5 Expenses & Profit */}
+      <div style={{ margin: '0 16px 16px' }}>
+        <h2 className="text-[16px] font-bold text-[#111827] mb-3">Expenses & Profit</h2>
+        <div className="bg-white border border-[#E5E7EB] rounded-xl p-4 mb-4">
+          <div className="grid grid-cols-2 gap-4 mb-4">
+            <div>
+              <div className="text-[10px] text-[#059669] font-bold uppercase tracking-wider mb-1">Income</div>
+              <div className="text-[20px] font-bold text-[#059669]">{formatMoney(totalEarned)}</div>
+            </div>
+            <div>
+              <div className="text-[10px] text-[#EF4444] font-bold uppercase tracking-wider mb-1">Expenses</div>
+              <div className="text-[20px] font-bold text-[#EF4444]">{formatMoney(totalExpensesThisMonth)}</div>
+            </div>
+          </div>
+          
+          <div className="flex items-end gap-2 mb-4 h-[60px]">
+            <div className="flex-1 flex flex-col justify-end h-full">
+              <div className="w-full bg-[#059669] rounded-t-md" style={{ height: `${Math.max(4, totalEarned > 0 ? (totalEarned / Math.max(totalEarned, totalExpensesThisMonth)) * 100 : 0)}%` }}></div>
+            </div>
+            <div className="flex-1 flex flex-col justify-end h-full">
+              <div className="w-full bg-[#EF4444] rounded-t-md" style={{ height: `${Math.max(4, totalExpensesThisMonth > 0 ? (totalExpensesThisMonth / Math.max(totalEarned, totalExpensesThisMonth)) * 100 : 0)}%` }}></div>
+            </div>
+          </div>
+          
+          <div className={`rounded-lg p-3 flex justify-between items-center ${netProfitThisMonth > 0 ? 'bg-[#D1FAE5]' : netProfitThisMonth < 0 ? 'bg-[#FEE2E2]' : 'bg-[#F3F4F6]'}`}>
+            <div className="font-bold text-[14px] text-[#111827]">Net Profit</div>
+            <div className={`font-bold text-[17px] ${netProfitThisMonth > 0 ? 'text-[#059669]' : netProfitThisMonth < 0 ? 'text-[#EF4444]' : 'text-[#111827]'}`}>
+              {netProfitThisMonth > 0 ? '+' : ''}{formatMoney(netProfitThisMonth)}
+            </div>
+          </div>
+          
+          {totalEarned > 0 && (
+            <div className="text-center text-[13px] text-[#6B7280] mt-3">
+              Profit Margin: {profitMargin}%
+            </div>
+          )}
+        </div>
+
+        {expenseCategoryBreakdown.length > 0 && (
+          <>
+            <h3 className="text-[14px] font-bold text-[#111827] mb-2">Top Spending Categories</h3>
+            <div className="bg-white border border-[#E5E7EB] rounded-xl overflow-hidden mb-3">
+              <div className="divide-y divide-[#F3F4F6]">
+                {expenseCategoryBreakdown.map(cat => (
+                  <div key={cat.id} className="p-3">
+                    <div className="flex justify-between items-center mb-1.5">
+                      <div className="flex items-center gap-2">
+                        <span className="text-lg">{cat.emoji}</span>
+                        <span className="font-bold text-[13px] text-[#111827]">{cat.label}</span>
+                      </div>
+                      <span className="font-bold text-[14px] text-[#111827]">{formatMoney(cat.amount)}</span>
+                    </div>
+                    <div className="w-full h-1.5 bg-[#F3F4F6] rounded-full overflow-hidden">
+                      <div className="h-full rounded-full" style={{ width: `${cat.percentage}%`, backgroundColor: cat.color }}></div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="text-center">
+              <button 
+                onClick={() => navigate('/expenses')}
+                className="text-[13px] font-medium text-[#059669] hover:text-[#047857] hover:underline"
+              >
+                See all →
+              </button>
+            </div>
+          </>
+        )}
+      </div>
+
       {/* 5. Top Clients */}
       <div style={{ margin: '0 16px 16px' }}>
         <h2 className="text-[16px] font-bold text-[#111827] mb-3">Top Clients</h2>
@@ -400,6 +508,18 @@ export default function FinancialSummary() {
             <div className="text-[12px] text-[#6B7280] mb-1">Total Invoices</div>
             <div className="font-bold text-[16px] text-[#111827]">{invoicesThisYear.length}</div>
             <div className="text-[11px] text-[#9CA3AF]">invoices created</div>
+          </div>
+          <div className="bg-white border border-[#E5E7EB] rounded-xl p-4">
+            <div className="text-[12px] text-[#6B7280] mb-1">Total Expenses</div>
+            <div className="font-bold text-[16px]" style={{ color: ytdExpenses > 0 ? '#EF4444' : '#111827' }}>
+              {formatMoney(ytdExpenses)}
+            </div>
+          </div>
+          <div className="bg-white border border-[#E5E7EB] rounded-xl p-4">
+            <div className="text-[12px] text-[#6B7280] mb-1">Net Profit</div>
+            <div className="font-bold text-[16px]" style={{ color: ytdNetProfit > 0 ? '#059669' : ytdNetProfit < 0 ? '#EF4444' : '#111827' }}>
+              {ytdNetProfit > 0 ? '+' : ''}{formatMoney(ytdNetProfit)}
+            </div>
           </div>
         </div>
         

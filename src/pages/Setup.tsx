@@ -328,8 +328,58 @@ export default function Setup() {
             <div className="bg-white dark:bg-neutral-900 rounded-xl border border-border overflow-hidden divide-y divide-border">
               <button type="button" onClick={handleExportData} className="w-full p-4 flex items-center justify-between hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors text-left">
                 <div>
-                  <p className="font-medium text-neutral-900 dark:text-neutral-50">Export Data</p>
+                  <p className="font-medium text-neutral-900 dark:text-neutral-50">Export Invoices</p>
                   <p className="text-xs text-neutral-500">Download all invoices and settings</p>
+                </div>
+                <Download className="w-5 h-5 text-neutral-400" />
+              </button>
+              <button type="button" onClick={() => {
+                const expensesStr = localStorage.getItem('invoiceflow_expenses');
+                if (!expensesStr) {
+                  window.dispatchEvent(new CustomEvent('app-toast', { 
+                    detail: { message: "No expenses to export", variant: "info" } 
+                  }));
+                  return;
+                }
+                const expenses = JSON.parse(expensesStr);
+                if (expenses.length === 0) {
+                  window.dispatchEvent(new CustomEvent('app-toast', { 
+                    detail: { message: "No expenses to export", variant: "info" } 
+                  }));
+                  return;
+                }
+                
+                // Create CSV
+                const headers = ['Date', 'Category', 'Description', 'Vendor', 'Amount (NGN)', 'Notes'];
+                const csvRows = [headers.join(',')];
+                
+                expenses.forEach((exp: any) => {
+                  if (exp.is_deleted) return;
+                  const row = [
+                    exp.date,
+                    exp.category,
+                    `"${exp.description.replace(/"/g, '""')}"`,
+                    `"${(exp.vendor || '').replace(/"/g, '""')}"`,
+                    exp.amount,
+                    `"${(exp.notes || '').replace(/"/g, '""')}"`
+                  ];
+                  csvRows.push(row.join(','));
+                });
+                
+                const csvString = csvRows.join('\n');
+                const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `invoiceflow_expenses_${new Date().toISOString().split('T')[0]}.csv`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+              }} className="w-full p-4 flex items-center justify-between hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors text-left">
+                <div>
+                  <p className="font-medium text-neutral-900 dark:text-neutral-50">Export Expenses</p>
+                  <p className="text-xs text-neutral-500">Download expenses as CSV</p>
                 </div>
                 <Download className="w-5 h-5 text-neutral-400" />
               </button>

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Home, FileText, BarChart2, Settings, FileSignature } from 'lucide-react';
+import { Home, FileText, BarChart2, FileSignature, Wallet } from 'lucide-react';
 import { getInvoices } from '../store/invoiceStore';
 import { getQuotations } from '../store/quotationStore';
 
@@ -16,11 +16,11 @@ export function BottomNav() {
     { id: 'home', path: '/app', icon: Home, label: 'Home' },
     { id: 'invoices', path: '/invoices', icon: FileText, label: 'Invoices', badge: overdueCount },
     { id: 'quotes', path: '/app/quotations', icon: FileSignature, label: 'Quotes', badge: pendingQuotesCount },
+    { id: 'expenses', path: '/expenses', icon: Wallet, label: 'Expenses' },
     { id: 'summary', path: '/summary', icon: BarChart2, label: 'Summary' },
-    { id: 'settings', path: '/setup', icon: Settings, label: 'Settings' },
   ];
 
-  const showNav = ['/app', '/invoices', '/app/quotations', '/summary', '/setup'].includes(location.pathname);
+  const showNav = ['/app', '/invoices', '/app/quotations', '/expenses', '/summary'].includes(location.pathname);
   if (!showNav) return null;
 
   return (
@@ -36,11 +36,11 @@ export function BottomNav() {
           >
             <div className="relative">
               <Icon className={`w-6 h-6 ${isActive ? 'text-primary-600' : 'text-neutral-400'}`} />
-              {tab.badge > 0 && (
+              {tab.badge && tab.badge > 0 ? (
                 <span className="absolute -top-1 -right-2 bg-danger text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[18px] text-center">
                   {tab.badge}
                 </span>
-              )}
+              ) : null}
             </div>
             <span className={`text-[10px] mt-1 font-medium ${isActive ? 'text-primary-600' : 'text-neutral-400'}`}>
               {tab.label}

@@ -117,7 +117,12 @@ export default function QuotationsList() {
   return (
     <div className="min-h-screen bg-bg pb-24">
       {toast.isVisible && (
-        <Toast message={toast.message} variant={toast.variant} onClose={() => setToast(prev => ({ ...prev, isVisible: false }))} />
+        <Toast 
+          isVisible={toast.isVisible}
+          message={toast.message} 
+          variant={toast.variant} 
+          onClose={() => setToast(prev => ({ ...prev, isVisible: false }))} 
+        />
       )}
 
       {/* Header */}
@@ -218,12 +223,7 @@ export default function QuotationsList() {
                     </div>
                     <div className="flex items-center gap-2">
                       {isExpiringSoon && <span className="text-[10px] font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full">Expiring soon!</span>}
-                      <Badge variant={
-                        quote.status === 'accepted' ? 'success' :
-                        quote.status === 'declined' ? 'danger' :
-                        quote.status === 'expired' ? 'warning' :
-                        quote.status === 'sent' ? 'info' : 'neutral'
-                      }>
+                      <Badge variant={quote.status}>
                         {quote.status}
                       </Badge>
                       

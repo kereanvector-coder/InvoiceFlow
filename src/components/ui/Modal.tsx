@@ -17,9 +17,10 @@ export interface ModalProps {
   onClose: () => void;
   children: React.ReactNode;
   className?: string;
+  title?: string;
 }
 
-export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children, className }) => {
+export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children, className, title }) => {
   // Prevent body scroll when open
   useEffect(() => {
     if (isOpen) {
@@ -74,6 +75,12 @@ export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children, classNa
               <div className="w-full flex justify-center pt-3 pb-2 sm:hidden cursor-grab active:cursor-grabbing">
                 <div style={{ width: '36px', height: '4px', borderRadius: '999px', background: '#E5E7EB', margin: '0 auto 16px' }} />
               </div>
+              
+              {title && (
+                <div className="px-5 pt-2 pb-3 border-b border-border">
+                  <h2 className="text-lg font-bold text-text">{title}</h2>
+                </div>
+              )}
               
               <div className="p-5 overflow-y-auto">
                 {children}

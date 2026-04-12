@@ -11,7 +11,7 @@ import { cn } from '@/src/lib/utils';
  */
 
 export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
-  variant: 'draft' | 'sent' | 'paid' | 'overdue';
+  variant: 'draft' | 'sent' | 'paid' | 'overdue' | 'accepted' | 'declined' | 'expired';
 }
 
 export const Badge = React.forwardRef<HTMLSpanElement, BadgeProps>(
@@ -21,6 +21,9 @@ export const Badge = React.forwardRef<HTMLSpanElement, BadgeProps>(
       sent: "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
       paid: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
       overdue: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400",
+      accepted: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
+      declined: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400",
+      expired: "bg-neutral-200 text-neutral-700 dark:bg-neutral-700 dark:text-neutral-300",
     };
 
     return (

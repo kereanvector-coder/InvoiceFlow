@@ -297,6 +297,7 @@ View quotation: ${link}
     <div className="min-h-screen bg-bg pb-24">
       {toast.isVisible && (
         <Toast 
+          isVisible={toast.isVisible}
           message={toast.message} 
           variant={toast.variant} 
           onClose={() => setToast(prev => ({ ...prev, isVisible: false }))} 
@@ -315,12 +316,7 @@ View quotation: ${link}
             <div>
               <h1 className="font-bold text-text flex items-center gap-2">
                 {quotation.quote_number}
-                <Badge variant={
-                  quotation.status === 'accepted' ? 'success' :
-                  quotation.status === 'declined' ? 'danger' :
-                  quotation.status === 'expired' ? 'warning' :
-                  quotation.status === 'sent' ? 'info' : 'neutral'
-                }>
+                <Badge variant={quotation.status}>
                   {quotation.status}
                 </Badge>
               </h1>
@@ -390,7 +386,7 @@ View quotation: ${link}
       {/* Template Preview */}
       <div className="max-w-3xl mx-auto px-4 mt-6">
         <div ref={quotationRef} className="bg-white rounded-xl shadow-sm overflow-hidden border border-border">
-          <TemplatePreview invoice={quotation as any} templateId={quotation.template} />
+          <TemplatePreview invoice={quotation as any} />
         </div>
       </div>
 
@@ -436,7 +432,7 @@ View quotation: ${link}
             {quotation.status === 'sent' && (
               <Button 
                 onClick={handleSendReminder} 
-                variant="outline"
+                variant="secondary"
                 className="w-full justify-center py-3.5 shadow-sm"
                 disabled={isSending}
               >
@@ -448,7 +444,7 @@ View quotation: ${link}
             {quotation.status === 'sent' && (
               <Button 
                 onClick={() => setShowDeclinedModal(true)} 
-                variant="outline"
+                variant="secondary"
                 className="w-full justify-center py-3.5 shadow-sm text-red-600 border-red-200 hover:bg-red-50"
               >
                 Mark as Declined
@@ -459,7 +455,7 @@ View quotation: ${link}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
             <Button 
               onClick={handleCopyLink} 
-              variant="outline"
+              variant="secondary"
               className="w-full justify-center bg-white"
             >
               {copyLinkText}
@@ -467,7 +463,7 @@ View quotation: ${link}
             
             <Button 
               onClick={handleDownloadPDF} 
-              variant="outline"
+              variant="secondary"
               disabled={isGeneratingPDF}
               className="w-full justify-center bg-white"
             >
@@ -478,7 +474,7 @@ View quotation: ${link}
             {(quotation.status === 'draft' || quotation.status === 'sent' || quotation.status === 'declined') && (
               <Button 
                 onClick={() => navigate(`/app/quotation/${quotation.id}/edit`)} 
-                variant="outline"
+                variant="secondary"
                 className="w-full justify-center bg-white"
               >
                 <Edit className="w-4 h-4 mr-2" />
@@ -526,7 +522,7 @@ View quotation: ${link}
             Mark this quotation as accepted by <span className="font-semibold">{quotation.client_name}</span>?
           </p>
           <div className="flex gap-3">
-            <Button variant="outline" className="flex-1" onClick={() => setShowAcceptedModal(false)}>Cancel</Button>
+            <Button variant="secondary" className="flex-1" onClick={() => setShowAcceptedModal(false)}>Cancel</Button>
             <Button className="flex-1 bg-green-600 hover:bg-green-700 border-green-600" onClick={handleMarkAccepted}>Mark as Accepted</Button>
           </div>
         </div>
@@ -538,7 +534,7 @@ View quotation: ${link}
             Mark this quotation as declined by <span className="font-semibold">{quotation.client_name}</span>?
           </p>
           <div className="flex gap-3">
-            <Button variant="outline" className="flex-1" onClick={() => setShowDeclinedModal(false)}>Cancel</Button>
+            <Button variant="secondary" className="flex-1" onClick={() => setShowDeclinedModal(false)}>Cancel</Button>
             <Button variant="danger" className="flex-1" onClick={handleMarkDeclined}>Mark as Declined</Button>
           </div>
         </div>
@@ -559,7 +555,7 @@ View quotation: ${link}
             A new invoice will be created with all the same details. You can edit it before sending.
           </p>
           <div className="flex gap-3">
-            <Button variant="outline" className="flex-1" onClick={() => setShowConvertModal(false)}>Cancel</Button>
+            <Button variant="secondary" className="flex-1" onClick={() => setShowConvertModal(false)}>Cancel</Button>
             <Button className="flex-1" onClick={handleConvertToInvoice}>Create Invoice →</Button>
           </div>
         </div>
@@ -571,7 +567,7 @@ View quotation: ${link}
             Are you sure you want to delete this quotation? This action cannot be undone.
           </p>
           <div className="flex gap-3">
-            <Button variant="outline" className="flex-1" onClick={() => setShowDeleteModal(false)}>Cancel</Button>
+            <Button variant="secondary" className="flex-1" onClick={() => setShowDeleteModal(false)}>Cancel</Button>
             <Button variant="danger" className="flex-1" onClick={handleDelete}>Delete</Button>
           </div>
         </div>
@@ -584,7 +580,7 @@ View quotation: ${link}
             <p className="text-text">{validationError?.message}</p>
           </div>
           <div className="flex gap-3">
-            <Button variant="outline" className="flex-1" onClick={() => setValidationError(null)}>Cancel</Button>
+            <Button variant="secondary" className="flex-1" onClick={() => setValidationError(null)}>Cancel</Button>
             {validationError?.actionLabel && (
               <Button className="flex-1" onClick={() => {
                 setValidationError(null);
@@ -606,7 +602,7 @@ View quotation: ${link}
             {fallbackModal.text}
           </div>
           <div className="flex gap-3">
-            <Button variant="outline" className="flex-1" onClick={() => setFallbackModal({ isOpen: false, text: '' })}>Close</Button>
+            <Button variant="secondary" className="flex-1" onClick={() => setFallbackModal({ isOpen: false, text: '' })}>Close</Button>
             <Button className="flex-1" onClick={() => {
               navigator.clipboard.writeText(fallbackModal.text);
               setToast({ isVisible: true, message: 'Message copied to clipboard', variant: 'success' });

@@ -36,7 +36,7 @@ export default function EditQuotation() {
 
   if (!quotation) return null;
 
-  const isReadOnly = quotation.status === 'paid';
+  const isReadOnly = quotation.status === 'accepted' || quotation.status === 'declined';
 
   return (
     <div className="min-h-screen bg-bg pt-8 px-4 sm:px-6 pb-[140px]">

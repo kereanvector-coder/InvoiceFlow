@@ -3,13 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import { useBusinessStore } from '../store/businessStore';
 import { getInvoices, updateInvoiceStatus, deleteInvoice, markInvoiceAsPaid, recordReminder, Invoice } from '../store/invoiceStore';
 import { getQuotations, Quotation } from '../store/quotationStore';
+import { getExpenses } from '../store/expenseStore';
 import { formatCurrency } from '../utils/formatCurrency';
 import { formatDate } from '../utils/formatDate';
 import { Card, Button, EmptyState, FAB, Badge, Toast } from '../components/ui';
 import { 
   FileText, Search, X, ChevronLeft, ChevronRight, 
   MoreVertical, CheckCircle, Bell, Send, Trash2, Eye, ArrowUpDown,
-  CheckCircle2, CheckSquare, Square, AlertCircle
+  CheckCircle2, CheckSquare, Square, AlertCircle, FileSignature, Wallet
 } from 'lucide-react';
 
 type TabType = 'All' | 'Overdue' | 'Sent' | 'Draft' | 'Paid';
@@ -21,6 +22,7 @@ export default function Dashboard() {
   
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [quotations, setQuotations] = useState<Quotation[]>([]);
+  const [expenses, setExpenses] = useState<any[]>([]);
   const [showFabMenu, setShowFabMenu] = useState(false);
   const [activeTab, setActiveTab] = useState<TabType>('All');
   const [searchQuery, setSearchQuery] = useState('');
@@ -51,6 +53,7 @@ export default function Dashboard() {
   const loadData = () => {
     setInvoices(getInvoices());
     setQuotations(getQuotations());
+    setExpenses(getExpenses());
   };
 
   useEffect(() => {
@@ -76,7 +79,13 @@ export default function Dashboard() {
 
   // Close menu when clicking outside
   useEffect(() => {
-    const handleClickOutside = () => setOpenMenuId(null);
+    const handleClickOutside = (e: MouseEvent) => {
+      setOpenMenuId(null);
+      const target = e.target as HTMLElement;
+      if (!target.closest('.fab-container')) {
+        setShowFabMenu(false);
+      }
+    };
     document.addEventListener('click', handleClickOutside);
     return () => document.removeEventListener('click', handleClickOutside);
   }, []);
@@ -115,9 +124,16 @@ export default function Dashboard() {
     return d.getMonth() === selectedMonth.getMonth() && d.getFullYear() === selectedMonth.getFullYear();
   });
 
+  const monthExpenses = expenses.filter(exp => {
+    const d = new Date(exp.date);
+    return d.getMonth() === selectedMonth.getMonth() && d.getFullYear() === selectedMonth.getFullYear();
+  });
+
   // Summary Stats
   const outstanding = monthInvoices.filter(i => i.status === 'sent' || i.status === 'overdue').reduce((sum, i) => sum + i.total_amount, 0);
   const paidThisMonth = monthInvoices.filter(i => i.status === 'paid').reduce((sum, i) => sum + i.total_amount, 0);
+  const totalExpensesThisMonth = monthExpenses.reduce((sum, exp) => sum + exp.amount, 0);
+  const netProfit = paidThisMonth - totalExpensesThisMonth;
   const overdue = monthInvoices.filter(i => i.status === 'overdue').reduce((sum, i) => sum + i.total_amount, 0);
   const totalCount = monthInvoices.length;
 
@@ -230,7 +246,7 @@ export default function Dashboard() {
 
   const handleFabClick = () => {
     localStorage.setItem('invoiceflow_fab_visited', 'true');
-    navigate('/create');
+    setShowFabMenu(!showFabMenu);
   };
 
   const tabs: TabType[] = ['All', 'Overdue', 'Sent', 'Draft', 'Paid'];
@@ -379,33 +395,38 @@ export default function Dashboard() {
         
         {/* PART 2 — FINANCIAL SUMMARY STRIP */}
         <div className="bg-neutral-900 dark:bg-neutral-950 rounded-2xl p-5 text-white shadow-lg">
-          <div className="mb-5">
-            <p className="text-sm text-neutral-400 mb-1 font-medium">Total Outstanding</p>
-            <p className="text-3xl font-bold tracking-tight">{formatCurrency(outstanding)}</p>
-          </div>
-          
-          <div className="border-t border-neutral-800 pt-4 flex justify-between items-center">
-            <div className="flex-1">
-              <p className="text-[11px] text-neutral-400 uppercase tracking-wider mb-1">Paid This Month</p>
-              <p className="font-medium">{formatCurrency(paidThisMonth)}</p>
+          <div className="grid grid-cols-2 gap-4 mb-4">
+            <div>
+              <p className="text-[11px] text-neutral-400 uppercase tracking-wider mb-1">Collected</p>
+              <p className="text-xl font-bold tracking-tight">{formatCurrency(paidThisMonth)}</p>
             </div>
-            <div className="w-px h-8 bg-neutral-800 mx-3"></div>
-            <div className="flex-1">
-              <p className="text-[11px] text-neutral-400 uppercase tracking-wider mb-1">Overdue</p>
-              <p className={`font-medium ${overdue > 0 ? 'text-danger' : 'text-white'}`}>{formatCurrency(overdue)}</p>
+            <div>
+              <p className="text-[11px] text-neutral-400 uppercase tracking-wider mb-1">Outstanding</p>
+              <p className={`text-xl font-bold tracking-tight ${outstanding > 0 ? 'text-danger' : 'text-white'}`}>{formatCurrency(outstanding)}</p>
             </div>
-            <div className="w-px h-8 bg-neutral-800 mx-3"></div>
-            <div className="flex-1">
-              <p className="text-[11px] text-neutral-400 uppercase tracking-wider mb-1">Invoices</p>
-              <p className="font-medium">{totalCount}</p>
+            <div>
+              <p className="text-[11px] text-neutral-400 uppercase tracking-wider mb-1">Expenses</p>
+              <p className="text-xl font-bold tracking-tight text-white">{formatCurrency(totalExpensesThisMonth)}</p>
+            </div>
+            <div>
+              <p className="text-[11px] text-neutral-400 uppercase tracking-wider mb-1">Net Profit</p>
+              <p className={`text-xl font-bold tracking-tight ${netProfit > 0 ? 'text-[#10B981]' : netProfit < 0 ? 'text-[#EF4444]' : 'text-white'}`}>
+                {netProfit > 0 ? '+' : ''}{formatCurrency(netProfit)}
+              </p>
             </div>
           </div>
         </div>
         
-        <div className="flex justify-end -mt-4">
+        <div className="flex justify-between items-center -mt-4">
+          <button 
+            onClick={() => navigate('/log-expense')}
+            className="text-[13px] font-medium text-neutral-500 hover:text-neutral-700"
+          >
+            Quick log an expense →
+          </button>
           <button 
             onClick={() => navigate('/summary')}
-            className="text-sm font-medium text-primary-600 hover:text-primary-700 hover:underline"
+            className="text-[13px] font-medium text-primary-600 hover:text-primary-700 hover:underline"
           >
             View Summary →
           </button>
@@ -702,13 +723,46 @@ export default function Dashboard() {
 
       {/* PART 7 — FLOATING ACTION BUTTON */}
       {!isSelectionMode && (
-        <button
-          onClick={handleFabClick}
-          className={`fixed right-6 w-14 h-14 bg-primary-600 rounded-full flex items-center justify-center text-white shadow-[0_4px_16px_rgba(5,150,105,0.4)] hover:bg-primary-700 hover:scale-105 active:scale-95 active:bg-primary-800 transition-all z-50 ${!hasVisited ? 'animate-pulse-ring' : ''}`}
-          style={{ bottom: 'calc(64px + 20px + env(safe-area-inset-bottom))', WebkitTapHighlightColor: 'transparent' }}
-        >
-          <span className="text-3xl font-light leading-none mb-1">+</span>
-        </button>
+        <div className="fixed right-6 z-50 fab-container" style={{ bottom: 'calc(64px + 20px + env(safe-area-inset-bottom))' }}>
+          {showFabMenu && (
+            <div className="absolute bottom-16 right-0 mb-2 flex flex-col gap-2 items-end">
+              <button
+                onClick={() => { setShowFabMenu(false); navigate('/create'); }}
+                className="flex items-center gap-3 bg-white px-4 py-3 rounded-xl shadow-lg border border-gray-100 hover:bg-gray-50 transition-colors whitespace-nowrap"
+              >
+                <span className="font-medium text-gray-700">New Invoice</span>
+                <div className="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center">
+                  <FileText className="w-4 h-4 text-blue-600" />
+                </div>
+              </button>
+              <button
+                onClick={() => { setShowFabMenu(false); navigate('/app/quotation/new'); }}
+                className="flex items-center gap-3 bg-white px-4 py-3 rounded-xl shadow-lg border border-gray-100 hover:bg-gray-50 transition-colors whitespace-nowrap"
+              >
+                <span className="font-medium text-gray-700">New Quotation</span>
+                <div className="w-8 h-8 rounded-full bg-purple-50 flex items-center justify-center">
+                  <FileSignature className="w-4 h-4 text-purple-600" />
+                </div>
+              </button>
+              <button
+                onClick={() => { setShowFabMenu(false); navigate('/log-expense'); }}
+                className="flex items-center gap-3 bg-white px-4 py-3 rounded-xl shadow-lg border border-gray-100 hover:bg-gray-50 transition-colors whitespace-nowrap"
+              >
+                <span className="font-medium text-gray-700">Log Expense</span>
+                <div className="w-8 h-8 rounded-full bg-emerald-50 flex items-center justify-center">
+                  <Wallet className="w-4 h-4 text-emerald-600" />
+                </div>
+              </button>
+            </div>
+          )}
+          <button
+            onClick={handleFabClick}
+            className={`w-14 h-14 bg-primary-600 rounded-full flex items-center justify-center text-white shadow-[0_4px_16px_rgba(5,150,105,0.4)] hover:bg-primary-700 hover:scale-105 active:scale-95 active:bg-primary-800 transition-all ${!hasVisited ? 'animate-pulse-ring' : ''} ${showFabMenu ? 'rotate-45' : ''}`}
+            style={{ WebkitTapHighlightColor: 'transparent' }}
+          >
+            <span className="text-3xl font-light leading-none mb-1">+</span>
+          </button>
+        </div>
       )}
 
       {/* Delete Confirmation Bottom Sheet */}
