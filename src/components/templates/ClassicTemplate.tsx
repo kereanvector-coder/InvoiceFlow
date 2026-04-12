@@ -14,24 +14,24 @@ export default function ClassicTemplate({ invoice }: { invoice: Invoice | Quotat
   const initials = business.business_name ? business.business_name.charAt(0).toUpperCase() : 'B';
   
   return (
-    <div className="bg-[#FAF9F6] min-h-screen font-serif text-[#2C3E50]">
-      <div className="max-w-4xl mx-auto p-8 md:p-12">
+    <div className="bg-[#FAF9F6] min-h-[1056px] font-serif text-[#2C3E50]">
+      <div className="max-w-4xl mx-auto p-2 md:p-4">
         {/* Header */}
-        <div className="flex justify-between items-end border-b-2 border-[#2C3E50] pb-8 mb-8">
+        <div className="flex justify-between items-end border-b-2 border-[#2C3E50] pb-2 mb-2">
           <div>
-            <h1 className="text-4xl font-bold tracking-tight text-[#1A252F] mb-2">{details.documentTypeLabel}</h1>
-            <p className="text-sm text-[#7F8C8D] tracking-widest uppercase font-mono">No. {details.documentNumber}</p>
+            <h1 className="text-sm font-bold tracking-tight text-[#1A252F] mb-0.5">{details.documentTypeLabel}</h1>
+            <p className="text-[10px] text-[#7F8C8D] tracking-widest uppercase font-mono">No. {details.documentNumber}</p>
           </div>
           <div className="text-right flex flex-col items-end">
             {hasLogo ? (
-              <LogoDisplay invoice={invoice} size={56} className="mb-3" style={{ borderRadius: '50%' }} />
+              <LogoDisplay invoice={invoice} size={32} className="mb-1" style={{ borderRadius: '50%' }} />
             ) : (
-              <div className="w-14 h-14 rounded-full bg-[#2C3E50] text-white flex items-center justify-center text-xl font-bold mb-3">
+              <div className="w-8 h-8 rounded-full bg-[#2C3E50] text-white flex items-center justify-center text-xs font-bold mb-1">
                 {initials}
               </div>
             )}
-            <h2 className="text-2xl font-bold text-[#2C3E50] mb-2">{business.business_name}</h2>
-            <div className="text-sm text-[#34495E] leading-relaxed">
+            <h2 className="text-xs font-bold text-[#2C3E50] mb-0.5">{business.business_name}</h2>
+            <div className="text-[10px] text-[#34495E] leading-relaxed">
               <p>{business.owner_name}</p>
               <p>{business.phone_number}</p>
             </div>
@@ -39,33 +39,33 @@ export default function ClassicTemplate({ invoice }: { invoice: Invoice | Quotat
         </div>
 
         {/* Details Grid */}
-        <div className="grid grid-cols-2 gap-12 mb-12">
+        <div className="grid grid-cols-2 gap-4 mb-3">
           <div>
-            <h3 className="text-xs font-bold text-[#7F8C8D] uppercase tracking-widest mb-3 border-b border-[#BDC3C7] pb-2">Billed To</h3>
-            <p className="text-lg font-bold text-[#2C3E50] mb-1">{invoice.client_name}</p>
-            <p className="text-sm text-[#34495E]">{invoice.client_phone}</p>
+            <h3 className="text-[9px] font-bold text-[#7F8C8D] uppercase tracking-widest mb-1 border-b border-[#BDC3C7] pb-0.5">Billed To</h3>
+            <p className="text-xs font-bold text-[#2C3E50] mb-0.5">{invoice.client_name}</p>
+            <p className="text-[10px] text-[#34495E]">{invoice.client_phone}</p>
           </div>
-          <div className="grid grid-cols-2 gap-6">
+          <div className="grid grid-cols-2 gap-2">
             <div>
-              <h3 className="text-xs font-bold text-[#7F8C8D] uppercase tracking-widest mb-3 border-b border-[#BDC3C7] pb-2">Date of Issue</h3>
-              <p className="text-sm font-medium text-[#2C3E50]">{formatDate(invoice.created_at)}</p>
+              <h3 className="text-[9px] font-bold text-[#7F8C8D] uppercase tracking-widest mb-1 border-b border-[#BDC3C7] pb-0.5">Date of Issue</h3>
+              <p className="text-[10px] font-medium text-[#2C3E50]">{formatDate(invoice.created_at)}</p>
             </div>
             <div>
-              <h3 className="text-xs font-bold text-[#7F8C8D] uppercase tracking-widest mb-3 border-b border-[#BDC3C7] pb-2">{details.dateLabel}</h3>
-              <p className="text-sm font-medium text-[#2C3E50]">{formatDate(details.dateValue)}</p>
+              <h3 className="text-[9px] font-bold text-[#7F8C8D] uppercase tracking-widest mb-1 border-b border-[#BDC3C7] pb-0.5">{details.dateLabel}</h3>
+              <p className="text-[10px] font-medium text-[#2C3E50]">{formatDate(details.dateValue)}</p>
             </div>
           </div>
         </div>
 
         
         {details.isQuote && details.projectTitle && (
-          <div className="bg-gray-50 border-l-4 border-gray-400 px-4 py-3 rounded-r-lg mb-6">
-            <div className="text-[10px] text-gray-500 uppercase tracking-[0.1em] font-bold mb-1">PROJECT</div>
-            <div className="text-[15px] text-gray-900 font-bold">
+          <div className="bg-[#F9FAFB] border-l-4 border-[#9CA3AF] px-2 py-1 rounded-r-lg mb-2">
+            <div className="text-[8px] text-[#6B7280] uppercase tracking-[0.1em] font-bold mb-0.5">PROJECT</div>
+            <div className="text-[11px] text-[#111827] font-bold">
               {details.projectTitle}
             </div>
             {details.projectDescription && (
-              <div className="text-[13px] text-gray-600 italic mt-1">
+              <div className="text-[9px] text-[#4B5563] italic mt-0.5">
                 {details.projectDescription}
               </div>
             )}
@@ -73,25 +73,25 @@ export default function ClassicTemplate({ invoice }: { invoice: Invoice | Quotat
         )}
 
         {/* Items Table */}
-        <div className="mb-12">
+        <div className="mb-3">
           <table className="w-full text-left border-collapse">
             <thead>
               <tr>
-                <th className="py-3 border-b-2 border-[#2C3E50] text-xs font-bold text-[#7F8C8D] uppercase tracking-widest w-1/2">Description</th>
-                <th className="py-3 border-b-2 border-[#2C3E50] text-xs font-bold text-[#7F8C8D] uppercase tracking-widest text-center">Qty</th>
-                <th className="py-3 border-b-2 border-[#2C3E50] text-xs font-bold text-[#7F8C8D] uppercase tracking-widest text-right">Unit Price</th>
-                <th className="py-3 border-b-2 border-[#2C3E50] text-xs font-bold text-[#7F8C8D] uppercase tracking-widest text-right">Amount</th>
+                <th className="py-1 border-b-2 border-[#2C3E50] text-[9px] font-bold text-[#7F8C8D] uppercase tracking-widest w-1/2">Description</th>
+                <th className="py-1 border-b-2 border-[#2C3E50] text-[9px] font-bold text-[#7F8C8D] uppercase tracking-widest text-center">Qty</th>
+                <th className="py-1 border-b-2 border-[#2C3E50] text-[9px] font-bold text-[#7F8C8D] uppercase tracking-widest text-right">Unit Price</th>
+                <th className="py-1 border-b-2 border-[#2C3E50] text-[9px] font-bold text-[#7F8C8D] uppercase tracking-widest text-right">Amount</th>
               </tr>
             </thead>
-            <tbody className="text-sm">
+            <tbody className="text-[10px]">
               {items.map((item, index) => (
                 <tr key={item.id} className={index !== items.length - 1 ? 'border-b border-[#ECF0F1]' : ''}>
-                  <td className="py-4 pr-4">
+                  <td className="py-1 pr-2">
                     <p className="font-medium text-[#2C3E50]">{item.description}</p>
                   </td>
-                  <td className="py-4 text-center text-[#34495E]">{item.quantity}</td>
-                  <td className="py-4 text-right text-[#34495E]">{formatCurrency(item.unit_price)}</td>
-                  <td className="py-4 text-right font-bold text-[#2C3E50]">{formatCurrency(item.quantity * item.unit_price)}</td>
+                  <td className="py-1 text-center text-[#34495E]">{item.quantity}</td>
+                  <td className="py-1 text-right text-[#34495E]">{formatCurrency(item.unit_price)}</td>
+                  <td className="py-1 text-right font-bold text-[#2C3E50]">{formatCurrency(item.quantity * item.unit_price)}</td>
                 </tr>
               ))}
             </tbody>
@@ -99,32 +99,31 @@ export default function ClassicTemplate({ invoice }: { invoice: Invoice | Quotat
         </div>
 
         {/* Summary & Payment Info */}
-        <div className="grid grid-cols-2 gap-12 mb-12">
+        <div className="grid grid-cols-2 gap-4 mb-3">
           {/* Payment Info */}
           <div>
-            <h3 className="text-xs font-bold text-[#7F8C8D] uppercase tracking-widest mb-3 border-b border-[#BDC3C7] pb-2">Payment Information</h3>
-            <div className="bg-[#ECF0F1] p-4 rounded-sm text-sm text-[#34495E] leading-relaxed">
+            <h3 className="text-[9px] font-bold text-[#7F8C8D] uppercase tracking-widest mb-1 border-b border-[#BDC3C7] pb-0.5">Payment Information</h3>
+            <div className="bg-[#ECF0F1] p-1.5 rounded-sm text-[10px] text-[#34495E] leading-relaxed">
               <p><span className="font-bold text-[#2C3E50]">Bank:</span> {business.bank_name}</p>
               <p><span className="font-bold text-[#2C3E50]">Account Name:</span> {business.account_name}</p>
               <p><span className="font-bold text-[#2C3E50]">Account No:</span> <span className="font-mono">{business.account_number}</span></p>
             </div>
-          </div>
-
-          
-        {details.isQuote && details.terms && (
-          <div className="mb-6">
-            <div className="text-[11px] text-gray-500 uppercase tracking-[0.1em] font-bold mb-2">TERMS & CONDITIONS</div>
-            <div className="bg-gray-50 p-3 rounded-md">
-              <div className="text-[13px] text-gray-600 whitespace-pre-wrap">
-                {details.terms}
+            
+            {details.isQuote && details.terms && (
+              <div className="mt-2">
+                <div className="text-[8px] text-[#6B7280] uppercase tracking-[0.1em] font-bold mb-0.5">TERMS & CONDITIONS</div>
+                <div className="bg-[#F9FAFB] p-1 rounded-md">
+                  <div className="text-[9px] text-[#4B5563] whitespace-pre-wrap">
+                    {details.terms}
+                  </div>
+                </div>
               </div>
-            </div>
+            )}
           </div>
-        )}
 
-        {/* Totals */}
+          {/* Totals */}
           <div>
-            <div className="border-t border-[#BDC3C7] pt-4 space-y-3 text-sm">
+            <div className="border-t border-[#BDC3C7] pt-1.5 space-y-0.5 text-[10px]">
               <div className="flex justify-between text-[#34495E]">
                 <span>Subtotal</span>
                 <span>{formatCurrency(invoice.subtotal)}</span>
@@ -135,9 +134,9 @@ export default function ClassicTemplate({ invoice }: { invoice: Invoice | Quotat
                   <span>{formatCurrency(invoice.tax_amount)}</span>
                 </div>
               )}
-              <div className="flex justify-between items-center border-t-2 border-[#2C3E50] pt-4 mt-4">
-                <span className="text-lg font-bold text-[#2C3E50] uppercase tracking-widest">{details.amountLabel}</span>
-                <span className="text-2xl font-bold text-[#2C3E50]">{formatCurrency(invoice.total_amount)}</span>
+              <div className="flex justify-between items-center border-t-2 border-[#2C3E50] pt-1.5 mt-1.5">
+                <span className="text-xs font-bold text-[#2C3E50] uppercase tracking-widest">{details.amountLabel}</span>
+                <span className="text-xs font-bold text-[#2C3E50]">{formatCurrency(invoice.total_amount)}</span>
               </div>
             </div>
           </div>
@@ -145,26 +144,26 @@ export default function ClassicTemplate({ invoice }: { invoice: Invoice | Quotat
 
         {/* Notes */}
         {invoice.notes && (
-          <div className="mb-12">
-            <h3 className="text-xs font-bold text-[#7F8C8D] uppercase tracking-widest mb-3 border-b border-[#BDC3C7] pb-2">Notes</h3>
-            <p className="text-sm text-[#34495E] italic whitespace-pre-wrap leading-relaxed">{invoice.notes}</p>
+          <div className="mb-3">
+            <h3 className="text-[9px] font-bold text-[#7F8C8D] uppercase tracking-widest mb-1 border-b border-[#BDC3C7] pb-0.5">Notes</h3>
+            <p className="text-[10px] text-[#34495E] italic whitespace-pre-wrap leading-relaxed">{invoice.notes}</p>
           </div>
         )}
 
         {/* Signature */}
         {business.signature && (
-          <div className="mb-12 flex justify-end">
+          <div className="mb-3 flex justify-end">
             <div className="text-center">
-              <img src={business.signature} alt="Signature" className="h-16 object-contain mb-2 mx-auto" />
-              <div className="w-48 border-t border-[#2C3E50] mx-auto"></div>
-              <div className="text-sm text-[#2C3E50] mt-2 font-bold">{business.owner_name}</div>
-              <div className="text-xs text-[#7F8C8D] uppercase tracking-widest mt-1">Authorized Signature</div>
+              <img src={business.signature} alt="Signature" className="h-8 object-contain mb-0.5 mx-auto" />
+              <div className="w-24 border-t border-[#2C3E50] mx-auto"></div>
+              <div className="text-[10px] text-[#2C3E50] mt-0.5 font-bold">{business.owner_name}</div>
+              <div className="text-[8px] text-[#7F8C8D] uppercase tracking-widest mt-0.5">Authorized Signature</div>
             </div>
           </div>
         )}
 
         {/* Footer */}
-        <div className="text-center pt-8 border-t border-[#BDC3C7] text-xs text-[#7F8C8D]">
+        <div className="text-center pt-2 border-t border-[#BDC3C7] text-[9px] text-[#7F8C8D]">
           <p>Thank you for your business.</p>
         </div>
       </div>

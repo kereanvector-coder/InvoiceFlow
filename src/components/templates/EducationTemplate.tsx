@@ -13,61 +13,61 @@ export default function EducationTemplate({ invoice }: { invoice: Invoice | Quot
   const hasLogo = !!getLogo(invoice);
 
   return (
-    <div className="bg-[#EFF6FF] min-h-screen font-sans text-[#1E3A8A] pb-6">
+    <div className="bg-[#EFF6FF] min-h-[1056px] font-sans text-[#1E3A8A] pb-6">
       {/* Official header */}
-      <div className="bg-white border-b-[3px] border-b-[#1D4ED8] p-6 flex justify-between items-center">
-        <div className="flex items-center gap-4">
+      <div className="bg-white border-b-[3px] border-b-[#1D4ED8] p-1.5 flex justify-between items-center">
+        <div className="flex items-center gap-1.5">
           {hasLogo ? (
-            <LogoDisplay invoice={invoice} size={64} style={{ borderRadius: '50%', border: '3px solid #DBEAFE' }} />
+            <LogoDisplay invoice={invoice} size={32} style={{ borderRadius: '50%', border: '2px solid #DBEAFE' }} />
           ) : (
-            <div className="w-[64px] h-[64px] bg-[#1D4ED8] border-[3px] border-[#DBEAFE] rounded-full flex items-center justify-center shrink-0">
-              <div className="text-white text-[10px] text-center font-bold leading-tight uppercase">Official<br/>{details.documentTypeLabel}</div>
+            <div className="w-[32px] h-[32px] bg-[#1D4ED8] border-[2px] border-[#DBEAFE] rounded-full flex items-center justify-center shrink-0">
+              <div className="text-white text-[6px] text-center font-bold leading-tight uppercase">Official<br/>{details.documentTypeLabel}</div>
             </div>
           )}
           <div>
-            <div className="text-[18px] font-bold text-[#1D4ED8]">{business.business_name}</div>
-            <div className="text-[12px] text-[#1D4ED8] mt-0.5">Educational Services</div>
+            <div className="text-[12px] font-bold text-[#1D4ED8]">{business.business_name}</div>
+            <div className="text-[9px] text-[#1D4ED8] mt-0.5">Educational Services</div>
           </div>
         </div>
         <div className="text-right">
-          <div className="text-[12px] text-gray-500 uppercase tracking-wider mb-1">Tuition Invoice</div>
-          <div className="text-[20px] font-bold text-[#1E3A8A] font-mono leading-none mb-1">#{details.documentNumber}</div>
-          <div className="text-[13px] text-gray-500 mb-2">{formatDate(invoice.created_at)}</div>
-          <div className="bg-[#DBEAFE] text-[#1D4ED8] px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider inline-block">
+          <div className="text-[8px] text-[#6B7280] uppercase tracking-wider mb-0.5">Tuition Invoice</div>
+          <div className="text-[12px] font-bold text-[#1E3A8A] font-mono leading-none mb-1">#{details.documentNumber}</div>
+          <div className="text-[9px] text-[#6B7280] mb-1">{formatDate(invoice.created_at)}</div>
+          <div className="bg-[#DBEAFE] text-[#1D4ED8] px-1.5 py-0.5 rounded-full text-[7px] font-bold uppercase tracking-wider inline-block">
             {invoice.status}
           </div>
         </div>
       </div>
 
       {/* Student section */}
-      <div className="bg-[#EFF6FF] py-4 px-6 flex justify-between items-start">
+      <div className="bg-[#EFF6FF] py-1 px-2 flex justify-between items-start">
         <div>
-          <div className="text-[9px] text-[#1D4ED8] uppercase tracking-wider font-bold mb-1">Student / Client</div>
-          <div className="text-[16px] font-bold text-[#1E3A8A]">{invoice.client_name}</div>
-          <div className="text-[13px] text-gray-500 mt-0.5">{invoice.client_phone}</div>
+          <div className="text-[7px] text-[#1D4ED8] uppercase tracking-wider font-bold mb-0.5">Student / Client</div>
+          <div className="text-[11px] font-bold text-[#1E3A8A]">{invoice.client_name}</div>
+          <div className="text-[9px] text-[#6B7280] mt-0.5">{invoice.client_phone}</div>
         </div>
         <div className="text-right">
-          <div className="text-[9px] text-[#1D4ED8] uppercase tracking-wider font-bold mb-1">Training Period</div>
-          <div className="text-[13px] text-[#1E3A8A] font-bold">{formatDate(invoice.created_at)} — {formatDate(details.dateValue)}</div>
+          <div className="text-[7px] text-[#1D4ED8] uppercase tracking-wider font-bold mb-0.5">Training Period</div>
+          <div className="text-[9px] text-[#1E3A8A] font-bold">{formatDate(invoice.created_at)} — {formatDate(details.dateValue)}</div>
         </div>
       </div>
 
       {/* Tuition card */}
-      <div className="mx-6 mt-4 bg-[#1D4ED8] rounded-xl p-5 flex justify-between items-center">
+      <div className="mx-2 mt-1 bg-[#1D4ED8] rounded-md p-2 flex justify-between items-center">
         <div>
-          <div className="text-[10px] text-white/70 uppercase tracking-wider font-bold mb-1">Tuition Fee</div>
-          <div className="text-[32px] font-bold text-white leading-none">{formatCurrency(invoice.total_amount)}</div>
+          <div className="text-[8px] text-[#FFFFFFB3] uppercase tracking-wider font-bold mb-0.5">Tuition Fee</div>
+          <div className="text-[20px] font-bold text-white leading-none">{formatCurrency(invoice.total_amount)}</div>
         </div>
         <div className="text-right">
-          <div className="text-[12px] text-white/70 mb-1">Due: {formatDate(details.dateValue)}</div>
+          <div className="text-[9px] text-[#FFFFFFB3] mb-0.5">Due: {formatDate(details.dateValue)}</div>
         </div>
       </div>
 
       {/* Courses card */}
-      <div className="mx-6 mt-6 bg-white rounded-xl border border-[#BFDBFE] overflow-hidden">
-        <div className="bg-[#DBEAFE] py-3 px-4">
-          <div className="text-[11px] text-[#1E3A8A] font-bold uppercase tracking-wider mb-1">📚 Courses & Sessions</div>
-          <div className="text-[10px] text-[#1D4ED8] uppercase tracking-wider grid grid-cols-12 gap-2 mt-2">
+      <div className="mx-2 mt-1 bg-white rounded-md border border-[#BFDBFE] overflow-hidden">
+        <div className="bg-[#DBEAFE] py-1 px-2">
+          <div className="text-[8px] text-[#1E3A8A] font-bold uppercase tracking-wider mb-0.5">📚 Courses & Sessions</div>
+          <div className="text-[7px] text-[#1D4ED8] uppercase tracking-wider grid grid-cols-12 gap-1 mt-0.5">
             <div className="col-span-6">Subject</div>
             <div className="col-span-2 text-center">Sessions</div>
             <div className="col-span-4 text-right">Fee</div>
@@ -76,30 +76,30 @@ export default function EducationTemplate({ invoice }: { invoice: Invoice | Quot
         
         <div>
           {items.map((item, i) => (
-            <div key={i} className="p-3.5 px-4 border-b border-[#EFF6FF] grid grid-cols-12 gap-2 items-center">
+            <div key={i} className="p-1 px-2 border-b border-[#EFF6FF] grid grid-cols-12 gap-1 items-center">
               <div className="col-span-6">
-                <div className="text-[14px] font-bold text-[#1E3A8A]">{item.description}</div>
-                <div className="text-[12px] text-[#1D4ED8] mt-0.5">{item.quantity} session(s)</div>
+                <div className="text-[10px] font-bold text-[#1E3A8A]">{item.description}</div>
+                <div className="text-[8px] text-[#1D4ED8] mt-0.5">{item.quantity} session(s)</div>
               </div>
-              <div className="col-span-2 text-center text-gray-500 text-sm">{item.quantity}</div>
-              <div className="col-span-4 text-right font-bold text-[#1E3A8A] text-sm">
+              <div className="col-span-2 text-center text-[#6B7280] text-[9px]">{item.quantity}</div>
+              <div className="col-span-4 text-right font-bold text-[#1E3A8A] text-[10px]">
                 {formatCurrency(item.quantity * item.unit_price)}
               </div>
             </div>
           ))}
         </div>
         
-        <div className="bg-[#EFF6FF] py-3.5 px-4 text-right">
-          <div className="font-bold text-[#1E3A8A] text-[17px]">Total Tuition: {formatCurrency(invoice.total_amount)}</div>
+        <div className="bg-[#EFF6FF] py-1 px-2 text-right">
+          <div className="font-bold text-[#1E3A8A] text-[11px]">Total Tuition: {formatCurrency(invoice.total_amount)}</div>
         </div>
       </div>
 
       
         {details.isQuote && details.terms && (
-          <div className="mb-6">
-            <div className="text-[11px] text-gray-500 uppercase tracking-[0.1em] font-bold mb-2">TERMS & CONDITIONS</div>
-            <div className="bg-gray-50 p-3 rounded-md">
-              <div className="text-[13px] text-gray-600 whitespace-pre-wrap">
+          <div className="mx-2 mt-1 mb-1">
+            <div className="text-[8px] text-[#6B7280] uppercase tracking-[0.1em] font-bold mb-0.5">TERMS & CONDITIONS</div>
+            <div className="bg-[#F9FAFB] p-1 rounded-sm">
+              <div className="text-[9px] text-[#4B5563] whitespace-pre-wrap">
                 {details.terms}
               </div>
             </div>
@@ -108,26 +108,26 @@ export default function EducationTemplate({ invoice }: { invoice: Invoice | Quot
 
         {/* Notes */}
       {invoice.notes && (
-        <div className="mx-6 mt-3 bg-white rounded-xl border border-[#BFDBFE] p-4">
-          <div className="text-[13px] font-bold text-[#1E3A8A] mb-1">📋 Learning Notes & Objectives</div>
-          <div className="text-[13px] text-gray-600 leading-[1.7]">{invoice.notes}</div>
+        <div className="mx-2 mt-1 bg-white rounded-md border border-[#BFDBFE] p-1.5">
+          <div className="text-[9px] font-bold text-[#1E3A8A] mb-0.5">📋 Learning Notes & Objectives</div>
+          <div className="text-[9px] text-[#4B5563] leading-[1.3]">{invoice.notes}</div>
         </div>
       )}
 
       {/* Payment */}
-      <div className="mx-6 mt-3 bg-white rounded-xl border border-[#BFDBFE] p-4">
-        <div className="text-[13px] font-bold text-[#1E3A8A] mb-3">🏦 Payment Instructions</div>
-        <div className="space-y-2 text-sm">
+      <div className="mx-2 mt-1 bg-white rounded-md border border-[#BFDBFE] p-1.5">
+        <div className="text-[9px] font-bold text-[#1E3A8A] mb-1">🏦 Payment Instructions</div>
+        <div className="space-y-0.5 text-[9px]">
           <div className="flex justify-between">
-            <span className="text-gray-500">Bank</span>
+            <span className="text-[#6B7280]">Bank</span>
             <span className="font-bold text-[#1E3A8A]">{business.bank_name}</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-gray-500">Account</span>
+            <span className="text-[#6B7280]">Account</span>
             <span className="font-bold text-[#1E3A8A]">{business.account_number}</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-gray-500">Name</span>
+            <span className="text-[#6B7280]">Name</span>
             <span className="font-bold text-[#1E3A8A]">{business.account_name}</span>
           </div>
         </div>
@@ -135,14 +135,14 @@ export default function EducationTemplate({ invoice }: { invoice: Invoice | Quot
 
       {/* Certificate note */}
       {invoice.status === 'paid' && (
-        <div className="mx-6 mt-3 bg-[#DCFCE7] rounded-xl p-3.5 px-4">
-          <div className="text-[13px] text-[#166534] font-bold">🎓 Payment confirmed. Certificate of completion available on request.</div>
+        <div className="mx-2 mt-1 bg-[#DCFCE7] rounded-md p-1.5 px-2">
+          <div className="text-[9px] text-[#166534] font-bold">🎓 Payment confirmed. Certificate of completion available on request.</div>
         </div>
       )}
 
       {/* Blue footer card */}
-      <div className="mx-6 mt-3 mb-6 bg-[#1D4ED8] rounded-xl p-5 text-center">
-        <div className="text-[14px] font-bold text-white leading-relaxed">
+      <div className="mx-2 mt-1 mb-1 bg-[#1D4ED8] rounded-md p-1.5 text-center">
+        <div className="text-[9px] font-bold text-white leading-relaxed">
           Knowledge is the greatest investment you can make. Thank you for choosing {business.business_name}. 📖
         </div>
       </div>

@@ -69,7 +69,7 @@ export default function QuotationForm({ initialData, isReadOnly = false }: Quota
     if (isReadOnly) return;
     setFormData(prev => ({ 
       ...prev, 
-      [field]: prev[field as keyof typeof prev] ? `\${prev[field as keyof typeof prev]} \${text}` : text 
+      [field]: prev[field as keyof typeof prev] ? `${prev[field as keyof typeof prev]} ${text}` : text 
     }));
     setIsDirty(true);
     if (errors[field]) setErrors((prev: any) => ({ ...prev, [field]: undefined }));
@@ -154,6 +154,9 @@ export default function QuotationForm({ initialData, isReadOnly = false }: Quota
         unit_price: Math.round((Number(i.unit_price_ngn) || 0) * 100)
       })),
       tax_rate: (Number(formData.tax_rate) || 0) / 100,
+      subtotal,
+      tax_amount,
+      total_amount,
       valid_until: formData.valid_until ? new Date(formData.valid_until).toISOString() : new Date().toISOString(),
       terms: formData.terms,
       notes: formData.notes,
@@ -172,7 +175,7 @@ export default function QuotationForm({ initialData, isReadOnly = false }: Quota
       } else {
         const newInv = createQuotation(data);
         setQuotationId(newInv.id);
-        window.history.replaceState(null, '', `/app/quotation/\${newInv.id}/edit`);
+        window.history.replaceState(null, '', `/app/quotation/${newInv.id}/edit`);
       }
       setIsDirty(false);
     } catch (err) {
@@ -201,7 +204,7 @@ export default function QuotationForm({ initialData, isReadOnly = false }: Quota
       
       const fullQuotation = getQuotationById(savedId!);
       if (fullQuotation) {
-        navigate(`/app/quotation/\${savedId}`);
+        navigate(`/app/quotation/${savedId}`);
       }
     } catch (err) {
       console.error(err);
@@ -364,7 +367,7 @@ export default function QuotationForm({ initialData, isReadOnly = false }: Quota
                   {!isReadOnly && (
                     <div className="absolute right-2 top-1/2 -translate-y-1/2">
                       <DictationButton onResult={(text) => {
-                        const newDesc = item.description ? `\${item.description} \${text}` : text;
+                        const newDesc = item.description ? `${item.description} ${text}` : text;
                         updateItem(index, 'description', newDesc);
                       }} />
                     </div>
@@ -504,11 +507,11 @@ export default function QuotationForm({ initialData, isReadOnly = false }: Quota
               <div 
                 key={tpl.id}
                 onClick={() => !isReadOnly && setFormData(prev => ({ ...prev, template: tpl.id }))}
-                className={`p-3 sm:p-4 rounded-xl border-2 cursor-pointer transition-all flex flex-col sm:flex-row items-center sm:items-start gap-3 sm:gap-4 \${
+                className={`p-3 sm:p-4 rounded-xl border-2 cursor-pointer transition-all flex flex-col sm:flex-row items-center sm:items-start gap-3 sm:gap-4 ${
                   formData.template === tpl.id 
                     ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/20' 
                     : 'border-border bg-surface hover:border-primary-300'
-                } \${isReadOnly ? 'opacity-70 cursor-not-allowed' : ''}`}
+                } ${isReadOnly ? 'opacity-70 cursor-not-allowed' : ''}`}
               >
                 <TemplateThumbnail templateId={tpl.id} />
                 <div className="text-center sm:text-left flex-1">

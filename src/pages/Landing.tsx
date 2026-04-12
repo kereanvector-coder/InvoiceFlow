@@ -51,60 +51,78 @@ export default function Landing() {
       </nav>
 
       {/* SECTION 2 — HERO */}
-      <section className="pt-20 pb-12 px-6 flex flex-col items-center justify-center text-center relative overflow-hidden" style={{ minHeight: 'calc(var(--vh, 1vh) * 100)' }}>
-        <div className="max-w-[640px] w-full mx-auto relative z-10">
-          <div className="inline-block px-3.5 py-1.5 rounded-full bg-[#059669]/15 border border-[#059669]/30 text-[#34D399] text-[13px] font-medium mb-6">
+      <section className="pt-32 pb-20 px-6 flex flex-col items-center justify-center text-center relative overflow-hidden" style={{ minHeight: 'calc(var(--vh, 1vh) * 100)' }}>
+        {/* Atmospheric Background Glows */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-[#059669] rounded-full blur-[120px] opacity-20 pointer-events-none"></div>
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-[#34D399] rounded-full blur-[150px] opacity-10 pointer-events-none"></div>
+        
+        <div className="max-w-[800px] w-full mx-auto relative z-10">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-md text-white text-[13px] font-medium mb-8 shadow-2xl">
+            <span className="w-2 h-2 rounded-full bg-[#34D399] animate-pulse"></span>
             For freelancers & small businesses in Nigeria
           </div>
           
-          <h1 className="text-[40px] leading-[1.15] font-bold text-white mb-5 tracking-tight">
+          <h1 className="text-[48px] sm:text-[72px] leading-[1.05] font-extrabold text-white mb-6 tracking-tight drop-shadow-2xl">
             Stop chasing clients<br/>for money.<br/>
-            <span className="text-[#34D399]">Start getting paid on time.</span>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#34D399] to-[#10B981]">Start getting paid on time.</span>
           </h1>
           
-          <p className="text-[17px] text-[#9CA3AF] leading-[1.6] max-w-[480px] mx-auto mb-8">
+          <p className="text-[18px] sm:text-[20px] text-[#9CA3AF] leading-[1.6] max-w-[540px] mx-auto mb-10 font-light">
             Create a professional invoice in 60 seconds, send it via WhatsApp, and track exactly when you get paid — all from your phone.
           </p>
           
-          <button 
-            onClick={() => navigate('/setup')}
-            className="w-full max-w-[320px] h-14 bg-[#059669] text-white font-bold text-[17px] rounded-[14px] shadow-[0_0_40px_rgba(5,150,105,0.3)] hover:bg-[#047857] hover:-translate-y-[1px] hover:shadow-[0_0_60px_rgba(5,150,105,0.4)] transition-all duration-200 active:scale-[0.98]"
-          >
-            Create My First Invoice
-          </button>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <button 
+              onClick={() => navigate('/setup')}
+              className="w-full sm:w-auto px-8 h-14 bg-white text-[#030712] font-bold text-[17px] rounded-full shadow-[0_0_40px_rgba(255,255,255,0.2)] hover:scale-[1.02] hover:shadow-[0_0_60px_rgba(255,255,255,0.3)] transition-all duration-300 active:scale-[0.98]"
+            >
+              Create My First Invoice
+            </button>
+            <button 
+              onClick={() => {
+                document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' });
+              }}
+              className="w-full sm:w-auto px-8 h-14 bg-transparent text-white font-bold text-[17px] rounded-full border border-white/20 hover:bg-white/5 transition-all duration-300"
+            >
+              See How It Works
+            </button>
+          </div>
           
-          <div className="text-[#6B7280] text-[13px] mt-4 font-medium">
+          <div className="text-[#6B7280] text-[12px] mt-6 font-medium tracking-widest uppercase">
             No signup required · Free to use · Works on any phone
           </div>
           
-          <div className="mt-8 flex flex-col items-center">
-            <div className="text-[#F59E0B] text-lg tracking-widest mb-1">★★★★★</div>
-            <div className="text-[#9CA3AF] text-[14px] mb-3">Trusted by freelancers across Nigeria</div>
+          <div className="mt-12 flex flex-col items-center">
+            <div className="text-[#F59E0B] text-lg tracking-widest mb-1 drop-shadow-md">★★★★★</div>
+            <div className="text-[#9CA3AF] text-[14px] mb-4">Trusted by freelancers across Nigeria</div>
             
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 bg-white/5 border border-white/10 rounded-full px-4 py-2 backdrop-blur-sm">
               <div className="flex -space-x-2">
-                <div className="w-8 h-8 rounded-full bg-emerald-500 border-2 border-[#030712] flex items-center justify-center text-[10px] font-bold text-white">AO</div>
-                <div className="w-8 h-8 rounded-full bg-blue-500 border-2 border-[#030712] flex items-center justify-center text-[10px] font-bold text-white">CU</div>
-                <div className="w-8 h-8 rounded-full bg-purple-500 border-2 border-[#030712] flex items-center justify-center text-[10px] font-bold text-white">EM</div>
+                <div className="w-8 h-8 rounded-full bg-emerald-500 border-2 border-[#030712] flex items-center justify-center text-[10px] font-bold text-white shadow-md">AO</div>
+                <div className="w-8 h-8 rounded-full bg-blue-500 border-2 border-[#030712] flex items-center justify-center text-[10px] font-bold text-white shadow-md">CU</div>
+                <div className="w-8 h-8 rounded-full bg-purple-500 border-2 border-[#030712] flex items-center justify-center text-[10px] font-bold text-white shadow-md">EM</div>
               </div>
-              <div className="text-[#9CA3AF] text-[13px] font-medium">Join 2,000+ users</div>
+              <div className="text-[#D1D5DB] text-[13px] font-medium">Join 2,000+ users</div>
             </div>
           </div>
           
           {/* Hero Phone Mockup */}
-          <div className="mt-12 relative max-w-[320px] mx-auto">
-            <div className="w-[210px] h-[375px] rounded-[32px] border-2 border-[#374151] bg-white shadow-[0_25px_50px_rgba(0,0,0,0.5)] mx-auto relative overflow-hidden">
+          <div className="mt-16 relative max-w-[320px] mx-auto" style={{ perspective: '2000px' }}>
+            <div 
+              className="w-[240px] h-[480px] rounded-[36px] border-[6px] border-[#1F2937] bg-white shadow-[0_30px_60px_rgba(0,0,0,0.6),0_0_80px_rgba(5,150,105,0.2)] mx-auto relative overflow-hidden transition-transform duration-700 hover:transform-none"
+              style={{ transform: 'rotateY(-12deg) rotateX(5deg)' }}
+            >
               {/* Mini Dashboard inside phone */}
-              <div className="absolute top-0 left-0 w-[420px] h-[750px] origin-top-left scale-[0.5] bg-gray-50">
+              <div className="absolute top-0 left-0 w-[420px] h-[840px] origin-top-left scale-[0.57] bg-gray-50">
                 <div className="p-6">
                   <div className="text-2xl font-bold text-gray-900 mb-6">Good morning, AO</div>
-                  <div className="bg-emerald-600 rounded-2xl p-6 text-white mb-6 shadow-lg">
+                  <div className="bg-emerald-600 rounded-2xl p-6 text-white mb-6 shadow-lg bg-gradient-to-br from-emerald-500 to-emerald-700">
                     <div className="text-emerald-100 text-sm mb-1">Total Received</div>
-                    <div className="text-4xl font-bold">₦450,000</div>
+                    <div className="text-4xl font-bold tracking-tight">₦450,000</div>
                   </div>
                   <div className="space-y-4">
                     <div className="flex justify-between items-center">
-                      <div className="font-bold text-lg">Recent Invoices</div>
+                      <div className="font-bold text-lg text-gray-900">Recent Invoices</div>
                       <div className="text-emerald-600 font-medium">View All</div>
                     </div>
                     {[1, 2, 3].map(i => (
@@ -115,7 +133,7 @@ export default function Landing() {
                         </div>
                         <div className="text-right">
                           <div className="font-bold text-gray-900">₦{i * 25},000</div>
-                          <div className="text-xs text-emerald-600 bg-emerald-50 px-2 py-1 rounded-md inline-block mt-1">Paid</div>
+                          <div className="text-xs text-emerald-600 bg-emerald-50 px-2 py-1 rounded-md inline-block mt-1 font-medium">Paid</div>
                         </div>
                       </div>
                     ))}
@@ -125,20 +143,20 @@ export default function Landing() {
             </div>
             
             {/* Floating Cards */}
-            <div className="absolute top-[20%] -left-8 bg-white rounded-xl p-2.5 shadow-xl border border-gray-100 animate-[float_3s_ease-in-out_infinite]">
+            <div className="absolute top-[20%] -left-12 bg-white/90 backdrop-blur-md rounded-xl p-3 shadow-2xl border border-white/20 animate-[float_4s_ease-in-out_infinite]">
               <div className="flex items-center gap-2 mb-1">
                 <CheckCircle2 className="w-4 h-4 text-[#059669]" />
                 <span className="text-[11px] font-medium text-gray-500">INV-012 · Paid</span>
               </div>
-              <div className="text-[15px] font-bold text-[#059669]">₦85,000</div>
+              <div className="text-[16px] font-bold text-[#059669]">₦85,000</div>
             </div>
             
-            <div className="absolute top-[60%] -right-8 bg-white rounded-xl p-2.5 shadow-xl border border-gray-100 animate-[float_3s_ease-in-out_infinite]" style={{ animationDelay: '1.5s' }}>
+            <div className="absolute top-[60%] -right-12 bg-white/90 backdrop-blur-md rounded-xl p-3 shadow-2xl border border-white/20 animate-[float_4s_ease-in-out_infinite]" style={{ animationDelay: '2s' }}>
               <div className="flex items-center gap-2 mb-1">
                 <Clock className="w-4 h-4 text-[#F59E0B]" />
                 <span className="text-[11px] font-medium text-gray-500">INV-013 · Due Tomorrow</span>
               </div>
-              <div className="text-[15px] font-bold text-gray-900">₦120,000</div>
+              <div className="text-[16px] font-bold text-gray-900">₦120,000</div>
             </div>
           </div>
         </div>

@@ -30,88 +30,90 @@ export default function TechTemplate({ invoice }: { invoice: Invoice | Quotation
   const hasLogo = !!getLogo(invoice);
 
   return (
-    <div className="bg-[#0D1117] min-h-screen font-mono text-[#E6EDF3]">
+    <div className="bg-[#0D1117] min-h-[1056px] font-mono text-[#E6EDF3]">
       {/* Top bar */}
-      <div className="bg-[#161B22] border-b border-[#30363D] px-6 py-4 flex justify-between items-center">
-        <div className="flex items-center gap-3">
+      <div className="bg-[#161B22] border-b border-[#30363D] px-2 py-1 flex justify-between items-center">
+        <div className="flex items-center gap-1.5">
           {hasLogo ? (
-            <LogoDisplay invoice={invoice} size={36} style={{ borderRadius: '6px' }} />
+            <LogoDisplay invoice={invoice} size={24} style={{ borderRadius: '4px' }} />
           ) : (
-            <div className="text-[14px] text-[#238636]">// INVOICE</div>
+            <div className="text-[10px] text-[#238636]">// INVOICE</div>
           )}
           <div>
-            <div className="text-[12px] text-[#58A6FF] opacity-80 mt-1 font-mono">const id = '{details.documentNumber}';</div>
+            <div className="text-[9px] text-[#58A6FF] opacity-80 mt-0.5 font-mono">const id = '{details.documentNumber}';</div>
           </div>
         </div>
-        <div className="text-[12px] text-[#8B949E]">
+        <div className="text-[9px] text-[#8B949E]">
           /* status: {invoice.status.toUpperCase()} */
         </div>
       </div>
 
       {/* Hero amount block */}
-      <div className="px-6 py-8">
-        <div className="text-[12px] text-[#8B949E] mb-2">// total amount due</div>
-        <div className="text-[42px] font-bold text-white tracking-tight">
-          {formatCurrency(invoice.total_amount)}
-        </div>
-        <div className="flex items-center gap-3 mt-3">
-          <div className="bg-[#238636]/10 text-[#238636] px-2 py-0.5 rounded-full text-[11px] flex items-center gap-1.5">
-            <div className="w-1.5 h-1.5 bg-[#238636] rounded-full"></div>
-            active
+      <div className="px-2 py-1 flex justify-between items-end">
+        <div>
+          <div className="text-[9px] text-[#8B949E] mb-0.5">// total amount due</div>
+          <div className="text-[20px] font-bold text-white tracking-tight leading-none">
+            {formatCurrency(invoice.total_amount)}
           </div>
-          <div className="text-[12px] text-[#8B949E]">
-            due {getRelativeDateText(details.dateValue)}
+          <div className="flex items-center gap-1.5 mt-1">
+            <div className="bg-[#2386361A] text-[#238636] px-1 py-0.5 rounded-full text-[8px] flex items-center gap-0.5">
+              <div className="w-1 h-1 bg-[#238636] rounded-full"></div>
+              active
+            </div>
+            <div className="text-[9px] text-[#8B949E]">
+              due {getRelativeDateText(details.dateValue)}
+            </div>
           </div>
         </div>
         
-        <div className="bg-[#21262D] border border-[#30363D] rounded-md px-3 py-1.5 inline-block mt-4">
-          <div className="text-[11px] text-[#58A6FF]">
+        <div className="bg-[#21262D] border border-[#30363D] rounded-md px-1.5 py-0.5 inline-block">
+          <div className="text-[8px] text-[#58A6FF]">
             invoice_id: '<span className="font-mono">{details.documentNumber}</span>' | issued: '{formatDate(invoice.created_at)}'
           </div>
         </div>
       </div>
 
       {/* Two panel cards */}
-      <div className="px-6 grid grid-cols-2 gap-4 mb-5">
-        <div className="bg-[#161B22] border border-[#30363D] rounded-lg p-4">
-          <div className="text-[11px] text-[#238636] mb-1">client_name:</div>
-          <div className="text-[15px] text-white font-bold mb-3">{invoice.client_name}</div>
+      <div className="px-2 grid grid-cols-2 gap-1.5 mt-1 mb-1">
+        <div className="bg-[#161B22] border border-[#30363D] rounded-lg p-1.5">
+          <div className="text-[8px] text-[#238636] mb-0.5">client_name:</div>
+          <div className="text-[11px] text-white font-bold mb-1">{invoice.client_name}</div>
           
-          <div className="text-[11px] text-[#238636] mb-1">client_phone:</div>
-          <div className="text-[13px] text-[#8B949E] mb-3">{invoice.client_phone}</div>
+          <div className="text-[8px] text-[#238636] mb-0.5">client_phone:</div>
+          <div className="text-[9px] text-[#8B949E] mb-1">{invoice.client_phone}</div>
           
-          <div className="text-[11px] text-[#238636] mb-1">due_date:</div>
-          <div className={`text-[13px] ${isOverdue ? 'text-red-400' : 'text-[#8B949E]'}`}>
+          <div className="text-[8px] text-[#238636] mb-0.5">due_date:</div>
+          <div className={`text-[9px] ${isOverdue ? 'text-[#F87171]' : 'text-[#8B949E]'}`}>
             '{formatDate(details.dateValue)}'
           </div>
         </div>
         
-        <div className="bg-[#161B22] border border-[#30363D] rounded-lg p-4">
-          <div className="text-[11px] text-[#238636] mb-1">bank_name:</div>
-          <div className="text-[13px] text-white mb-3">'{business.bank_name}'</div>
+        <div className="bg-[#161B22] border border-[#30363D] rounded-lg p-1.5">
+          <div className="text-[8px] text-[#238636] mb-0.5">bank_name:</div>
+          <div className="text-[9px] text-white mb-1">'{business.bank_name}'</div>
           
-          <div className="text-[11px] text-[#238636] mb-1">account_no:</div>
-          <div className="text-[15px] text-[#58A6FF] font-bold mb-3">'{business.account_number}'</div>
+          <div className="text-[8px] text-[#238636] mb-0.5">account_no:</div>
+          <div className="text-[11px] text-[#58A6FF] font-bold mb-1">'{business.account_number}'</div>
           
-          <div className="text-[11px] text-[#238636] mb-1">account_name:</div>
-          <div className="text-[13px] text-[#8B949E]">'{business.account_name}'</div>
+          <div className="text-[8px] text-[#238636] mb-0.5">account_name:</div>
+          <div className="text-[9px] text-[#8B949E]">'{business.account_name}'</div>
         </div>
       </div>
 
       {/* Deliverables section */}
-      <div className="px-6 my-5">
-        <div className="text-[12px] text-[#238636] mb-2">// deliverables</div>
+      <div className="px-2 my-1">
+        <div className="text-[9px] text-[#238636] mb-0.5">// deliverables</div>
         <div className="border-t border-[#30363D]"></div>
         
         {items.map((item) => (
-          <div key={item.id} className="py-3.5 border-b border-dashed border-[#21262D] flex justify-between items-center">
+          <div key={item.id} className="py-1 border-b border-dashed border-[#21262D] flex justify-between items-center">
             <div>
-              <div className="text-[14px] text-white">{item.description}</div>
-              <div className="text-[12px] text-[#8B949E] mt-1">
+              <div className="text-[10px] text-white">{item.description}</div>
+              <div className="text-[8px] text-[#8B949E] mt-0.5">
                 → {item.quantity} unit(s) @ {formatCurrency(item.unit_price)} each
               </div>
             </div>
-            <div className="text-[15px] font-bold text-[#238636]">
+            <div className="text-[11px] font-bold text-[#238636]">
               {formatCurrency(item.quantity * item.unit_price)}
             </div>
           </div>
@@ -119,10 +121,10 @@ export default function TechTemplate({ invoice }: { invoice: Invoice | Quotation
 
         
         {details.isQuote && details.terms && (
-          <div className="mb-6">
-            <div className="text-[11px] text-gray-500 uppercase tracking-[0.1em] font-bold mb-2">TERMS & CONDITIONS</div>
-            <div className="bg-gray-50 p-3 rounded-md">
-              <div className="text-[13px] text-gray-600 whitespace-pre-wrap">
+          <div className="mb-1 mt-1">
+            <div className="text-[8px] text-[#8B949E] uppercase tracking-[0.1em] font-bold mb-0.5">TERMS & CONDITIONS</div>
+            <div className="bg-[#161B22] p-1 rounded-md">
+              <div className="text-[9px] text-[#8B949E] whitespace-pre-wrap">
                 {details.terms}
               </div>
             </div>
@@ -130,61 +132,61 @@ export default function TechTemplate({ invoice }: { invoice: Invoice | Quotation
         )}
 
         {/* Totals */}
-        <div className="flex justify-end mt-4">
-          <div className="bg-[#161B22] border border-[#30363D] rounded-lg p-3.5 min-w-[240px]">
-            <div className="flex justify-between text-[13px] text-[#8B949E] mb-2">
+        <div className="flex justify-end mt-1">
+          <div className="bg-[#161B22] border border-[#30363D] rounded-lg p-1.5 min-w-[180px]">
+            <div className="flex justify-between text-[9px] text-[#8B949E] mb-0.5">
               <span>subtotal:</span>
               <span>{formatCurrency(invoice.subtotal)}</span>
             </div>
             {invoice.tax_amount > 0 && (
-              <div className="flex justify-between text-[13px] text-[#8B949E] mb-3">
+              <div className="flex justify-between text-[9px] text-[#8B949E] mb-0.5">
                 <span>tax:</span>
                 <span>{formatCurrency(invoice.tax_amount)}</span>
               </div>
             )}
-            <div className="border-t border-[#30363D] my-2"></div>
+            <div className="border-t border-[#30363D] my-0.5"></div>
             <div className="flex justify-between items-center">
-              <span className="text-[13px] text-[#8B949E]">total_due:</span>
-              <span className="text-[16px] font-bold text-[#238636]">{formatCurrency(invoice.total_amount)}</span>
+              <span className="text-[9px] text-[#8B949E]">total_due:</span>
+              <span className="text-[12px] font-bold text-[#238636]">{formatCurrency(invoice.total_amount)}</span>
             </div>
           </div>
         </div>
       </div>
 
       {/* Transfer instructions */}
-      <div className="mx-6 mt-4 bg-[#161B22] border border-[#238636] rounded-lg p-4">
-        <div className="text-[12px] text-[#238636] mb-2">// transfer_instructions</div>
-        <div className="text-[13px] leading-relaxed">
+      <div className="mx-2 mt-1 bg-[#161B22] border border-[#238636] rounded-lg p-1.5">
+        <div className="text-[8px] text-[#238636] mb-0.5">// transfer_instructions</div>
+        <div className="text-[9px] leading-relaxed">
           <span className="text-[#E6EDF3]">{'{'}</span><br/>
-          <span className="text-[#58A6FF] ml-4">bank:</span> <span className="text-[#A5D6FF]">'{business.bank_name}'</span>,<br/>
-          <span className="text-[#58A6FF] ml-4">account:</span> <span className="text-[#A5D6FF]">'{business.account_number}'</span>,<br/>
-          <span className="text-[#58A6FF] ml-4">name:</span> <span className="text-[#A5D6FF]">'{business.account_name}'</span><br/>
+          <span className="text-[#58A6FF] ml-2">bank:</span> <span className="text-[#A5D6FF]">'{business.bank_name}'</span>,<br/>
+          <span className="text-[#58A6FF] ml-2">account:</span> <span className="text-[#A5D6FF]">'{business.account_number}'</span>,<br/>
+          <span className="text-[#58A6FF] ml-2">name:</span> <span className="text-[#A5D6FF]">'{business.account_name}'</span><br/>
           <span className="text-[#E6EDF3]">{'}'}</span>
         </div>
       </div>
 
       {/* Notes */}
       {invoice.notes && (
-        <div className="mx-6 mt-4 text-[13px] text-[#8B949E] italic whitespace-pre-wrap">
+        <div className="mx-2 mt-1 text-[9px] text-[#8B949E] italic whitespace-pre-wrap">
           /* {invoice.notes} */
         </div>
       )}
 
       {/* Signature */}
       {business.signature && (
-        <div className="mx-6 mt-6 flex justify-end">
+        <div className="mx-2 mt-1 flex justify-end">
           <div className="text-center">
-            <div className="text-[11px] text-[#238636] mb-2">// auth_signature</div>
-            <img src={business.signature} alt="Signature" className="h-16 object-contain mb-2 mx-auto" />
-            <div className="w-40 border-t border-[#30363D] mx-auto"></div>
-            <div className="text-[12px] text-[#8B949E] mt-1 font-medium">{business.owner_name}</div>
+            <div className="text-[8px] text-[#238636] mb-0.5">// auth_signature</div>
+            <img src={business.signature} alt="Signature" className="h-6 object-contain mb-0.5 mx-auto" />
+            <div className="w-20 border-t border-[#30363D] mx-auto"></div>
+            <div className="text-[8px] text-[#8B949E] mt-0.5 font-medium">{business.owner_name}</div>
           </div>
         </div>
       )}
 
       {/* Footer */}
-      <div className="border-t border-[#30363D] mt-6 px-6 py-4">
-        <div className="text-[11px] text-[#8B949E]">
+      <div className="border-t border-[#30363D] mt-1 px-2 py-1">
+        <div className="text-[8px] text-[#8B949E]">
           // Invoice generated via InvoiceFlow API
         </div>
       </div>

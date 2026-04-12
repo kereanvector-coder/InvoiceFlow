@@ -456,7 +456,7 @@ View quotation: ${link}
             )}
           </div>
 
-          <div className="grid grid-cols-2 gap-3 pt-2">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
             <Button 
               onClick={handleCopyLink} 
               variant="outline"
@@ -465,6 +465,16 @@ View quotation: ${link}
               {copyLinkText}
             </Button>
             
+            <Button 
+              onClick={handleDownloadPDF} 
+              variant="outline"
+              disabled={isGeneratingPDF}
+              className="w-full justify-center bg-white"
+            >
+              {isGeneratingPDF ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Download className="w-4 h-4 mr-2" />}
+              Download PDF
+            </Button>
+
             {(quotation.status === 'draft' || quotation.status === 'sent' || quotation.status === 'declined') && (
               <Button 
                 onClick={() => navigate(`/app/quotation/${quotation.id}/edit`)} 
@@ -485,6 +495,26 @@ View quotation: ${link}
               <Trash2 className="w-4 h-4 mr-2" />
               Delete Quotation
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Client Actions Bottom Bar */}
+      {!isSenderView && (
+        <div className="shrink-0 bg-surface border-t border-border px-4 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] print:hidden flex flex-col gap-3 w-full">
+          <div className="max-w-2xl mx-auto w-full flex flex-col gap-3">
+            <Button 
+              variant="primary" 
+              onClick={handleDownloadPDF}
+              disabled={isGeneratingPDF}
+              className="w-full text-sm py-2 bg-emerald-600 hover:bg-emerald-700 text-white border-transparent"
+            >
+              {isGeneratingPDF ? (
+                <span className="flex items-center"><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Generating PDF...</span>
+              ) : (
+                <><Download className="w-4 h-4 mr-2" /> Download PDF</>
+              )}
+            </Button>
           </div>
         </div>
       )}
