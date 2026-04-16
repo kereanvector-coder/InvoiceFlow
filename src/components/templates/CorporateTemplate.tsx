@@ -11,7 +11,7 @@ export default function CorporateTemplate({ invoice }: { invoice: Invoice | Quot
   const details = getDocumentDetails(invoice);
   
   return (
-    <div className="bg-[#F8FAFC] min-h-[1056px] font-sans text-[#0F172A]">
+    <div className="bg-[#F8FAFC] aspect-[210/297] font-sans text-[#0F172A]">
       {/* Header band */}
       <div className="bg-[#1E3A5F] px-4 py-2 w-full">
         <div className="flex justify-between items-start">

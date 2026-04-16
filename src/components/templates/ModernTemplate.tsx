@@ -15,7 +15,7 @@ export default function ModernTemplate({ invoice }: { invoice: Invoice | Quotati
   const total = subtotal + taxAmount;
 
   return (
-    <div className="bg-[#0A0A0A] font-sans text-[#D4D4D4] p-4 sm:p-4 min-h-[1056px]">
+    <div className="bg-[#0A0A0A] font-sans text-[#D4D4D4] p-4 sm:p-4 aspect-[210/297]">
       <div className="max-w-4xl mx-auto bg-[#141414] rounded-lg border border-[#262626] overflow-hidden shadow-2xl print:shadow-none print:border-none">
         
         {/* Header */}

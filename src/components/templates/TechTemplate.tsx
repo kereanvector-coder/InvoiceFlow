@@ -30,7 +30,7 @@ export default function TechTemplate({ invoice }: { invoice: Invoice | Quotation
   const hasLogo = !!getLogo(invoice);
 
   return (
-    <div className="bg-[#0D1117] min-h-[1056px] font-mono text-[#E6EDF3]">
+    <div className="bg-[#0D1117] aspect-[210/297] font-mono text-[#E6EDF3]">
       {/* Top bar */}
       <div className="bg-[#161B22] border-b border-[#30363D] px-2 py-1 flex justify-between items-center">
         <div className="flex items-center gap-1.5">

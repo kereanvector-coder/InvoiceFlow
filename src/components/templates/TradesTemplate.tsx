@@ -11,7 +11,7 @@ export default function TradesTemplate({ invoice }: { invoice: Invoice | Quotati
   const details = getDocumentDetails(invoice);
 
   return (
-    <div className="bg-[#1C1917] min-h-[1056px] font-sans text-[#FEF3C7] pb-6">
+    <div className="bg-[#1C1917] aspect-[210/297] font-sans text-[#FEF3C7] pb-6">
       {/* Orange ID bar */}
       <div className="bg-[#EA580C] py-1.5 px-4 flex justify-between items-center">
         <div className="text-[11px] text-white font-bold">⚙ JOB INVOICE</div>

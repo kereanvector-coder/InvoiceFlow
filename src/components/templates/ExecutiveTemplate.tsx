@@ -11,7 +11,7 @@ export default function ExecutiveTemplate({ invoice }: { invoice: Invoice | Quot
   const details = getDocumentDetails(invoice);
 
   return (
-    <div className="bg-[#1A1A1A] min-h-[1056px] font-sans text-[#F5F0E8]">
+    <div className="bg-[#1A1A1A] aspect-[210/297] font-sans text-[#F5F0E8]">
       {/* Top gold gradient band */}
       <div className="h-1 w-full bg-gradient-to-r from-[#C9A84C] via-[#F0D080] to-[#C9A84C]"></div>
 

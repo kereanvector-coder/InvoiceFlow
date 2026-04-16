@@ -11,7 +11,7 @@ export default function CreativeTemplate({ invoice }: { invoice: Invoice | Quota
   const details = getDocumentDetails(invoice);
 
   return (
-    <div className="bg-[#FAF5FF] min-h-[1056px] font-sans text-[#1E1B4B]">
+    <div className="bg-[#FAF5FF] aspect-[210/297] font-sans text-[#1E1B4B]">
       {/* Purple gradient hero band */}
       <div className="bg-gradient-to-br from-[#7C3AED] to-[#4F46E5] p-1.5 pb-2">
         <div className="flex justify-between items-start">

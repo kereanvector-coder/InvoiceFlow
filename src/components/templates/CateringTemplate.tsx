@@ -13,7 +13,7 @@ export default function CateringTemplate({ invoice }: { invoice: Invoice | Quota
   const hasLogo = !!getLogo(invoice);
 
   return (
-    <div className="bg-[#FFF8F0] min-h-[1056px] font-sans text-[#450A0A] pb-6">
+    <div className="bg-[#FFF8F0] aspect-[210/297] font-sans text-[#450A0A] pb-6">
       {/* Deep red top bar */}
       <div className="bg-[#9B1C1C] py-1.5 px-3 flex justify-between items-center">
         <div className="text-[10px] text-white font-bold">🍽 CATERING INVOICE</div>

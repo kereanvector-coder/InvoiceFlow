@@ -13,7 +13,7 @@ export default function EducationTemplate({ invoice }: { invoice: Invoice | Quot
   const hasLogo = !!getLogo(invoice);
 
   return (
-    <div className="bg-[#EFF6FF] min-h-[1056px] font-sans text-[#1E3A8A] pb-6">
+    <div className="bg-[#EFF6FF] aspect-[210/297] font-sans text-[#1E3A8A] pb-6">
       {/* Official header */}
       <div className="bg-white border-b-[3px] border-b-[#1D4ED8] p-1.5 flex justify-between items-center">
         <div className="flex items-center gap-1.5">

@@ -11,7 +11,7 @@ export default function WellnessTemplate({ invoice }: { invoice: Invoice | Quota
   const details = getDocumentDetails(invoice);
 
   return (
-    <div className="bg-[#F0FDF9] min-h-[1056px] font-sans text-[#134E4A] pb-6">
+    <div className="bg-[#F0FDF9] aspect-[210/297] font-sans text-[#134E4A] pb-6">
       {/* Teal organic header */}
       <div className="bg-[#0D9488] rounded-b-[24px] pt-4 px-4 pb-6">
         <div className="flex justify-between items-start">

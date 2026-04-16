@@ -14,7 +14,7 @@ export default function ClassicTemplate({ invoice }: { invoice: Invoice | Quotat
   const initials = business.business_name ? business.business_name.charAt(0).toUpperCase() : 'B';
   
   return (
-    <div className="bg-[#FAF9F6] min-h-[1056px] font-serif text-[#2C3E50]">
+    <div className="bg-[#FAF9F6] aspect-[210/297] font-serif text-[#2C3E50]">
       <div className="max-w-4xl mx-auto p-2 md:p-4">
         {/* Header */}
         <div className="flex justify-between items-end border-b-2 border-[#2C3E50] pb-2 mb-2">

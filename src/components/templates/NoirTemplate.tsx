@@ -11,7 +11,7 @@ export default function NoirTemplate({ invoice }: { invoice: Invoice | Quotation
   const details = getDocumentDetails(invoice);
 
   return (
-    <div className="bg-[#0A0A0A] min-h-[1056px] font-sans text-[#F5F5F5] border-t-[2px] border-t-[#C4977A] border-b-[2px] border-b-[#C4977A] flex flex-col">
+    <div className="bg-[#0A0A0A] aspect-[210/297] font-sans text-[#F5F5F5] border-t-[2px] border-t-[#C4977A] border-b-[2px] border-b-[#C4977A] flex flex-col">
       {/* Header */}
       <div className="bg-[#0A0A0A] pt-6 pb-4 px-4 flex justify-between items-start">
         <div className="flex flex-col items-start">
