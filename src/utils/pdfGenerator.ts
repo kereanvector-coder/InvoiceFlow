@@ -5,8 +5,12 @@ export const generatePDF = async (element: HTMLElement, filename: string) => {
     margin:       0,
     filename:     filename,
     image:        { type: 'jpeg' as const, quality: 0.98 },
-    html2canvas:  { scale: 2, useCORS: true, logging: false },
-    jsPDF:        { unit: 'in' as const, format: 'a4' as const, orientation: 'portrait' as const }
+    html2canvas:  { scale: 2, useCORS: true, logging: false, windowWidth: element.scrollWidth },
+    jsPDF:        { 
+      unit: 'px' as const, 
+      format: [element.scrollWidth, element.scrollHeight] as [number, number], 
+      orientation: 'portrait' as const 
+    }
   };
 
   try {
