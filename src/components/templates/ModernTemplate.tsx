@@ -6,9 +6,9 @@ import { formatCurrency } from '../../utils/formatCurrency';
 import { formatDate } from '../../utils/formatDate';
 import LogoDisplay from './LogoDisplay';
 
-export default function ModernTemplate({ invoice }: { invoice: Invoice | Quotation }) {
+export default function ModernTemplate({ invoice, isReceipt }: { invoice: Invoice | Quotation, isReceipt?: boolean }) {
   const { business_snapshot: business, items } = invoice;
-  const details = getDocumentDetails(invoice);
+  const details = getDocumentDetails(invoice, isReceipt);
   
   const subtotal = items.reduce((sum, item) => sum + (item.quantity * item.unit_price), 0);
   const taxAmount = Math.round(subtotal * invoice.tax_rate);
@@ -47,7 +47,7 @@ export default function ModernTemplate({ invoice }: { invoice: Invoice | Quotati
               invoice.status === 'overdue' ? 'bg-[#EF444433] text-[#F87171] border border-[#EF44444D]' :
               'bg-[#262626] text-[#D4D4D4] border border-[#404040]'
             }`}>
-              {invoice.status}
+              {isReceipt ? "PAID IN FULL" : invoice.status}
             </div>
           </div>
         </div>
@@ -60,10 +60,12 @@ export default function ModernTemplate({ invoice }: { invoice: Invoice | Quotati
             <p className="text-[#A3A3A3] text-[9px]">{invoice.client_phone}</p>
           </div>
           <div className="bg-[#1A1A1A] p-1.5 rounded-md border border-[#26262699]">
+            {!isReceipt && <>
             <h3 className="text-[#737373] text-[8px] font-bold uppercase tracking-wider mb-0.5">Payment Details</h3>
             <p className="text-white font-medium text-[11px] mb-0.5">{business.bank_name}</p>
             <p className="text-[#34D399] text-[11px] font-mono mb-0.5">{business.account_number}</p>
             <p className="text-[#A3A3A3] text-[9px]">{business.account_name}</p>
+            </>}
           </div>
         </div>
 
@@ -108,7 +110,7 @@ export default function ModernTemplate({ invoice }: { invoice: Invoice | Quotati
           </div>
 
           
-        {details.isQuote && details.terms && (
+        {details.terms && (
           <div className="mb-1 mt-2">
             <div className="text-[8px] text-[#A3A3A3] uppercase tracking-[0.1em] font-bold mb-0.5">TERMS & CONDITIONS</div>
             <div className="bg-[#1A1A1A] p-1 rounded-sm">

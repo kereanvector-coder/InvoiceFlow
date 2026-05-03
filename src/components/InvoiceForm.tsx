@@ -36,7 +36,8 @@ export default function InvoiceForm({ initialData, isReadOnly = false }: Invoice
     })) : [{ id: generateId('ITM'), description: '', quantity: '1', unit_price_ngn: '' }],
     tax_rate: initialData?.tax_rate !== undefined ? (initialData.tax_rate * 100).toString() : '0',
     due_date: initialData?.due_date ? initialData.due_date.split('T')[0] : '',
-    notes: initialData?.notes || ''
+    notes: initialData?.notes || '',
+    terms: initialData?.terms || ''
   });
 
   // Calculations
@@ -162,6 +163,7 @@ export default function InvoiceForm({ initialData, isReadOnly = false }: Invoice
       tax_rate: (Number(formData.tax_rate) || 0) / 100,
       due_date: formData.due_date ? new Date(formData.due_date).toISOString() : new Date().toISOString(),
       notes: formData.notes,
+      terms: formData.terms,
       status: initialData?.status || 'draft'
     };
   };
@@ -427,6 +429,22 @@ export default function InvoiceForm({ initialData, isReadOnly = false }: Invoice
             {!isReadOnly && (
               <div className="absolute right-2 top-2">
                 <DictationButton onResult={(text) => handleDictation('notes', text)} />
+              </div>
+            )}
+          </div>
+          <div className="mt-4 relative">
+            <Textarea 
+              label="Terms & Conditions (Optional)" 
+              name="terms"
+              value={formData.terms}
+              onChange={handleChange}
+              disabled={isReadOnly}
+              placeholder="Payment is due within 30 days."
+              style={{ paddingRight: '3rem' }}
+            />
+            {!isReadOnly && (
+              <div className="absolute right-2 top-2">
+                <DictationButton onResult={(text) => handleDictation('terms', text)} />
               </div>
             )}
           </div>

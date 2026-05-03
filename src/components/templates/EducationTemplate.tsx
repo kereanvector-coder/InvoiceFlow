@@ -7,9 +7,9 @@ import { formatDate } from '../../utils/formatDate';
 import LogoDisplay from './LogoDisplay';
 import { getLogo } from './LogoDisplay';
 
-export default function EducationTemplate({ invoice }: { invoice: Invoice | Quotation }) {
+export default function EducationTemplate({ invoice, isReceipt }: { invoice: Invoice | Quotation, isReceipt?: boolean }) {
   const { business_snapshot: business, items } = invoice;
-  const details = getDocumentDetails(invoice);
+  const details = getDocumentDetails(invoice, isReceipt);
   const hasLogo = !!getLogo(invoice);
 
   return (
@@ -20,21 +20,21 @@ export default function EducationTemplate({ invoice }: { invoice: Invoice | Quot
           {hasLogo ? (
             <LogoDisplay invoice={invoice} size={32} style={{ borderRadius: '50%', border: '2px solid #DBEAFE' }} />
           ) : (
-            <div className="w-[32px] h-[32px] bg-[#1D4ED8] border-[2px] border-[#DBEAFE] rounded-full flex items-center justify-center shrink-0">
+            <div className={`w-[32px] h-[32px] ${isReceipt ? 'bg-emerald-600' : 'bg-[#1D4ED8]'} border-[2px] border-[#DBEAFE] rounded-full flex items-center justify-center shrink-0`}>
               <div className="text-white text-[6px] text-center font-bold leading-tight uppercase">Official<br/>{details.documentTypeLabel}</div>
             </div>
           )}
           <div>
-            <div className="text-[12px] font-bold text-[#1D4ED8]">{business.business_name}</div>
-            <div className="text-[9px] text-[#1D4ED8] mt-0.5">Educational Services</div>
+            <div className={`text-[12px] font-bold ${isReceipt ? 'text-emerald-600' : 'text-[#1D4ED8]'}`}>{business.business_name}</div>
+            <div className={`text-[9px] ${isReceipt ? 'text-emerald-600' : 'text-[#1D4ED8]'} mt-0.5`}>Educational Services</div>
           </div>
         </div>
         <div className="text-right">
           <div className="text-[8px] text-[#6B7280] uppercase tracking-wider mb-0.5">Tuition Invoice</div>
           <div className="text-[12px] font-bold text-[#1E3A8A] font-mono leading-none mb-1">#{details.documentNumber}</div>
           <div className="text-[9px] text-[#6B7280] mb-1">{formatDate(invoice.created_at)}</div>
-          <div className="bg-[#DBEAFE] text-[#1D4ED8] px-1.5 py-0.5 rounded-full text-[7px] font-bold uppercase tracking-wider inline-block">
-            {invoice.status}
+          <div className={`bg-[#DBEAFE] ${isReceipt ? 'text-emerald-600' : 'text-[#1D4ED8]'} px-1.5 py-0.5 rounded-full text-[7px] font-bold uppercase tracking-wider inline-block`}>
+            {isReceipt ? "PAID IN FULL" : invoice.status}
           </div>
         </div>
       </div>
@@ -42,18 +42,18 @@ export default function EducationTemplate({ invoice }: { invoice: Invoice | Quot
       {/* Student section */}
       <div className="bg-[#EFF6FF] py-1 px-2 flex justify-between items-start">
         <div>
-          <div className="text-[7px] text-[#1D4ED8] uppercase tracking-wider font-bold mb-0.5">Student / Client</div>
+          <div className={`text-[7px] ${isReceipt ? 'text-emerald-600' : 'text-[#1D4ED8]'} uppercase tracking-wider font-bold mb-0.5`}>Student / Client</div>
           <div className="text-[11px] font-bold text-[#1E3A8A]">{invoice.client_name}</div>
           <div className="text-[9px] text-[#6B7280] mt-0.5">{invoice.client_phone}</div>
         </div>
         <div className="text-right">
-          <div className="text-[7px] text-[#1D4ED8] uppercase tracking-wider font-bold mb-0.5">Training Period</div>
+          <div className={`text-[7px] ${isReceipt ? 'text-emerald-600' : 'text-[#1D4ED8]'} uppercase tracking-wider font-bold mb-0.5`}>Training Period</div>
           <div className="text-[9px] text-[#1E3A8A] font-bold">{formatDate(invoice.created_at)} — {formatDate(details.dateValue)}</div>
         </div>
       </div>
 
       {/* Tuition card */}
-      <div className="mx-2 mt-1 bg-[#1D4ED8] rounded-md p-2 flex justify-between items-center">
+      <div className={`mx-2 mt-1 ${isReceipt ? 'bg-emerald-600' : 'bg-[#1D4ED8]'} rounded-md p-2 flex justify-between items-center`}>
         <div>
           <div className="text-[8px] text-[#FFFFFFB3] uppercase tracking-wider font-bold mb-0.5">Tuition Fee</div>
           <div className="text-[20px] font-bold text-white leading-none">{formatCurrency(invoice.total_amount)}</div>
@@ -67,7 +67,7 @@ export default function EducationTemplate({ invoice }: { invoice: Invoice | Quot
       <div className="mx-2 mt-1 bg-white rounded-md border border-[#BFDBFE] overflow-hidden">
         <div className="bg-[#DBEAFE] py-1 px-2">
           <div className="text-[8px] text-[#1E3A8A] font-bold uppercase tracking-wider mb-0.5">📚 Courses & Sessions</div>
-          <div className="text-[7px] text-[#1D4ED8] uppercase tracking-wider grid grid-cols-12 gap-1 mt-0.5">
+          <div className={`text-[7px] ${isReceipt ? 'text-emerald-600' : 'text-[#1D4ED8]'} uppercase tracking-wider grid grid-cols-12 gap-1 mt-0.5`}>
             <div className="col-span-6">Subject</div>
             <div className="col-span-2 text-center">Sessions</div>
             <div className="col-span-4 text-right">Fee</div>
@@ -79,7 +79,7 @@ export default function EducationTemplate({ invoice }: { invoice: Invoice | Quot
             <div key={i} className="p-1 px-2 border-b border-[#EFF6FF] grid grid-cols-12 gap-1 items-center">
               <div className="col-span-6">
                 <div className="text-[10px] font-bold text-[#1E3A8A]">{item.description}</div>
-                <div className="text-[8px] text-[#1D4ED8] mt-0.5">{item.quantity} session(s)</div>
+                <div className={`text-[8px] ${isReceipt ? 'text-emerald-600' : 'text-[#1D4ED8]'} mt-0.5`}>{item.quantity} session(s)</div>
               </div>
               <div className="col-span-2 text-center text-[#6B7280] text-[9px]">{item.quantity}</div>
               <div className="col-span-4 text-right font-bold text-[#1E3A8A] text-[10px]">
@@ -95,7 +95,7 @@ export default function EducationTemplate({ invoice }: { invoice: Invoice | Quot
       </div>
 
       
-        {details.isQuote && details.terms && (
+        {details.terms && (
           <div className="mx-2 mt-1 mb-1">
             <div className="text-[8px] text-[#6B7280] uppercase tracking-[0.1em] font-bold mb-0.5">TERMS & CONDITIONS</div>
             <div className="bg-[#F9FAFB] p-1 rounded-sm">
@@ -141,7 +141,7 @@ export default function EducationTemplate({ invoice }: { invoice: Invoice | Quot
       )}
 
       {/* Blue footer card */}
-      <div className="mx-2 mt-1 mb-1 bg-[#1D4ED8] rounded-md p-1.5 text-center">
+      <div className={`mx-2 mt-1 mb-1 ${isReceipt ? 'bg-emerald-600' : 'bg-[#1D4ED8]'} rounded-md p-1.5 text-center`}>
         <div className="text-[9px] font-bold text-white leading-relaxed">
           Knowledge is the greatest investment you can make. Thank you for choosing {business.business_name}. 📖
         </div>

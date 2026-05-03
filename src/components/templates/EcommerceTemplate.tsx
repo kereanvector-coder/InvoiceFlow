@@ -6,14 +6,14 @@ import { formatCurrency } from '../../utils/formatCurrency';
 import { formatDate } from '../../utils/formatDate';
 import LogoDisplay from './LogoDisplay';
 
-export default function EcommerceTemplate({ invoice }: { invoice: Invoice | Quotation }) {
+export default function EcommerceTemplate({ invoice, isReceipt }: { invoice: Invoice | Quotation, isReceipt?: boolean }) {
   const { business_snapshot: business, items } = invoice;
-  const details = getDocumentDetails(invoice);
+  const details = getDocumentDetails(invoice, isReceipt);
 
   return (
     <div className="bg-[#F8FAFC] aspect-[210/297] font-sans text-[#0F172A]">
       {/* Blue confirmation strip */}
-      <div className="bg-[#2563EB] py-1.5 px-3 text-center">
+      <div className={`${isReceipt ? 'bg-emerald-600' : 'bg-[#2563EB]'} py-1.5 px-3 text-center`}>
         {invoice.status === 'paid' ? (
           <div className="text-[10px] text-white font-medium">✓ Order Confirmed · Thank you for your purchase!</div>
         ) : (
@@ -28,12 +28,12 @@ export default function EcommerceTemplate({ invoice }: { invoice: Invoice | Quot
             <LogoDisplay invoice={invoice} size={28} style={{ borderRadius: '4px' }} />
             <div>
               <div className="text-[12px] font-bold text-[#0F172A]">{business.business_name}</div>
-              <div className="text-[9px] text-[#2563EB] font-medium mt-0.5">Online Store</div>
+              <div className={`text-[9px] ${isReceipt ? 'text-emerald-600' : 'text-[#2563EB]'} font-medium mt-0.5`}>Online Store</div>
             </div>
           </div>
           <div className="text-right">
             <div className="text-[8px] text-[#9CA3AF] uppercase tracking-wider font-bold">Order</div>
-            <div className="text-[14px] font-bold text-[#2563EB] font-mono leading-tight">#{details.documentNumber}</div>
+            <div className={`text-[14px] font-bold ${isReceipt ? 'text-emerald-600' : 'text-[#2563EB]'} font-mono leading-tight`}>#{details.documentNumber}</div>
             <div className="text-[9px] text-[#6B7280] mt-0.5">{formatDate(invoice.created_at)}</div>
           </div>
         </div>
@@ -47,10 +47,10 @@ export default function EcommerceTemplate({ invoice }: { invoice: Invoice | Quot
         </div>
         
         <div className="bg-[#DBEAFE] rounded-md p-1.5 px-2 flex justify-between items-center">
-          <div className="bg-[#2563EB] text-white px-1.5 py-0.5 rounded text-[8px] font-bold uppercase tracking-wider">
-            {invoice.status}
+          <div className={`${isReceipt ? 'bg-emerald-600' : 'bg-[#2563EB]'} text-white px-1.5 py-0.5 rounded text-[8px] font-bold uppercase tracking-wider`}>
+            {isReceipt ? "PAID IN FULL" : invoice.status}
           </div>
-          <div className="text-[#2563EB] text-[9px] font-medium">
+          <div className={`${isReceipt ? 'text-emerald-600' : 'text-[#2563EB]'} text-[9px] font-medium`}>
             Due: {formatDate(details.dateValue)}
           </div>
         </div>
@@ -96,24 +96,31 @@ export default function EcommerceTemplate({ invoice }: { invoice: Invoice | Quot
           <div className="h-px bg-[#E2E8F0] my-1.5"></div>
           <div className="flex justify-between items-center">
             <div className="font-bold text-[#0F172A] text-[10px]">ORDER TOTAL</div>
-            <div className="font-bold text-[#2563EB] text-[14px]">{formatCurrency(invoice.total_amount)}</div>
+            <div className={`font-bold ${isReceipt ? 'text-emerald-600' : 'text-[#2563EB]'} text-[14px]`}>{formatCurrency(invoice.total_amount)}</div>
           </div>
         </div>
       </div>
 
       {/* Payment card */}
       <div className="bg-white m-1.5 rounded-lg shadow-sm border border-[#E2E8F0] p-2">
-        <div className="text-[#2563EB] font-bold text-[9px] mb-1.5">💳 PAYMENT INSTRUCTIONS</div>
+        <div className={`${isReceipt ? 'text-emerald-600' : 'text-[#2563EB]'} font-bold text-[9px] mb-1.5`}>💳 PAYMENT INSTRUCTIONS</div>
         <div className="space-y-1 text-[9px] text-[#0F172A]">
           <div>1. Transfer <span className="font-bold">{formatCurrency(invoice.total_amount)}</span> to:</div>
           <div className="bg-[#F9FAFB] border border-[#E2E8F0] rounded-md p-1.5 text-center">
-            <div className="text-[12px] font-bold text-[#2563EB] font-mono">{business.account_number}</div>
+            <div className={`text-[12px] font-bold ${isReceipt ? 'text-emerald-600' : 'text-[#2563EB]'} font-mono`}>{business.account_number}</div>
             <div className="text-[8px] text-[#6B7280] mt-0.5">{business.bank_name} · {business.account_name}</div>
           </div>
           <div>2. Send proof of payment to <span className="font-bold">{business.phone_number}</span></div>
           <div>3. Order confirmed within 24 hours</div>
         </div>
       </div>
+
+      {details.terms && (
+        <div className="bg-[#F8FAFC] m-1.5 rounded-lg border border-dashed border-[#CBD5E1] p-1.5">
+          <div className="font-bold text-[#64748B] text-[8px] uppercase tracking-wider mb-0.5">Terms & Conditions</div>
+          <div className="text-[#64748B] text-[9px] leading-relaxed whitespace-pre-wrap">{details.terms}</div>
+        </div>
+      )}
 
       {/* CSS barcode footer */}
       <div className="bg-white m-1.5 mb-1.5 rounded-lg shadow-sm border border-[#E2E8F0] p-2 text-center">

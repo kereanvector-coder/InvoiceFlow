@@ -21,6 +21,7 @@ export default function InvoiceDetail() {
   const [invoice, setInvoice] = useState<Invoice | null>(null);
   const [errorState, setErrorState] = useState<'not_found' | 'decode_error' | null>(null);
   const [isSenderView, setIsSenderView] = useState(false);
+  const [isReceiptView, setIsReceiptView] = useState(false);
   
   const [showPaidModal, setShowPaidModal] = useState(false);
   const [paidDate, setPaidDate] = useState(new Date().toISOString().split('T')[0]);
@@ -41,13 +42,24 @@ export default function InvoiceDetail() {
 
   useEffect(() => {
     const dataParam = searchParams.get('data');
+    const receiptParam = searchParams.get('receipt');
     
-    if (dataParam) {
+    if (receiptParam) {
+      const decoded = decodeInvoice(receiptParam);
+      if (decoded) {
+        setInvoice(decoded);
+        setIsSenderView(false);
+        setIsReceiptView(true);
+      } else {
+        setErrorState('decode_error');
+      }
+    } else if (dataParam) {
       // Client View
       const decoded = decodeInvoice(dataParam);
       if (decoded) {
         setInvoice(decoded);
         setIsSenderView(false);
+        setIsReceiptView(false);
       } else {
         setErrorState('decode_error');
       }
@@ -287,18 +299,9 @@ Thank you.
   };
 
   const handleSendReminder = async () => {
+    // ... existing reminder logic
     if (!navigator.onLine) {
       setToast({ isVisible: true, message: "You're offline. Connect to the internet to send via WhatsApp.", variant: 'error' });
-      
-      // Save pending send
-      if (id) {
-        const pendingStr = localStorage.getItem('invoiceflow_pending_sends');
-        let pending = pendingStr ? JSON.parse(pendingStr) : [];
-        if (!pending.includes(id)) {
-          pending.push(id);
-          localStorage.setItem('invoiceflow_pending_sends', JSON.stringify(pending));
-        }
-      }
       return;
     }
 
@@ -322,6 +325,78 @@ Thank you.
       }
     }, 500);
   };
+
+  const handleSendReceipt = async () => {
+    if (!navigator.onLine) {
+      setToast({ isVisible: true, message: "You're offline. Connect to the internet to send via WhatsApp.", variant: 'error' });
+      return;
+    }
+    
+    if (!id) return;
+    setIsSending(true);
+
+    let updatedInvoice = { ...invoice };
+    
+    // Generate receipt snapshot if first time
+    if (!updatedInvoice.receipt_number) {
+      const { getNextReceiptNumber } = await import('../store/invoiceStore');
+      const receiptNumber = getNextReceiptNumber();
+      const now = new Date().toISOString();
+      
+      updatedInvoice.receipt_number = receiptNumber;
+      updatedInvoice.receipt_generated_at = now;
+      updatedInvoice.receipt_snapshot = await encodeInvoice(invoice);
+      
+      const newInv = updateInvoice(id, {
+        receipt_number: receiptNumber,
+        receipt_generated_at: now,
+        receipt_snapshot: updatedInvoice.receipt_snapshot
+      });
+      if (newInv) updatedInvoice = newInv;
+      setInvoice(updatedInvoice);
+    }
+    
+    // Use the snapshot URL specifically
+    const link = `${window.location.origin}/?receipt=${updatedInvoice.receipt_snapshot || await encodeInvoice(invoice)}`;
+    
+    const paidAtFormatted = new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }).format(new Date(invoice.paid_at || new Date()));
+    const firstName = invoice.client_name.split(' ')[0] || invoice.client_name;
+
+    const message = `Hi ${firstName},
+
+Thank you for your payment.
+
+Please find your receipt below.
+
+🧾 Receipt: ${updatedInvoice.receipt_number}
+📄 For Invoice: ${invoice.invoice_number}
+💰 Amount Paid: ₦${totalFormatted}
+📅 Payment Date: ${paidAtFormatted}
+
+View receipt here:
+${link}
+
+Thank you for your business.
+— ${invoice.business_snapshot.business_name}`;
+
+    const phone = cleanPhoneForWhatsApp(invoice.client_phone);
+    const waLink = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+
+    const newWindow = window.open(waLink, '_blank');
+
+    setTimeout(() => {
+      setIsSending(false);
+      if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
+        setFallbackModal({ isOpen: true, text: message });
+      } else {
+        const now = new Date().toISOString();
+        const finalInv = updateInvoice(id, { receipt_sent_at: now });
+        if (finalInv) setInvoice(finalInv);
+        setToast({ isVisible: true, message: '🧾 Receipt sent via WhatsApp', variant: 'success' });
+      }
+    }, 500);
+  };
+
 
   const getReminderCooldown = () => {
     if (!invoice.last_reminder_at) return { canSend: true, hoursAgo: 0, hoursRemaining: 0 };
@@ -392,11 +467,21 @@ Thank you.
     });
   }
 
+  if (invoice.receipt_generated_at) {
+    timelineEvents.push({
+      type: 'receipt',
+      icon: <FileText className="w-4 h-4" />,
+      text: `Receipt ${invoice.receipt_number || 'generated'} sent`,
+      date: invoice.receipt_generated_at,
+      color: 'text-emerald-600'
+    });
+  }
+
   // Sort newest first
   timelineEvents.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
   return (
-    <div className={`relative h-[calc(var(--vh,1vh)*100)] overflow-hidden flex flex-col ${isPaid ? 'bg-neutral-50' : 'bg-white'} print:bg-white print:h-auto print:overflow-visible`}>
+    <div className={`relative h-[calc(var(--vh,1vh)*100)] overflow-hidden flex flex-col ${isPaid || isReceiptView ? 'bg-neutral-50' : 'bg-white'} print:bg-white print:h-auto print:overflow-visible`}>
       <Toast 
         isVisible={toast.isVisible} 
         message={toast.message} 
@@ -416,7 +501,7 @@ Thank you.
       )}
 
       {/* Client View Prominent Box */}
-      {!isSenderView && !isPaid && (
+      {!isSenderView && !isPaid && !isReceiptView && (
         <div className="bg-blue-50 border-b border-blue-100 p-4 text-center print:hidden shrink-0">
           <p className="text-blue-800 font-medium">
             This is your invoice from {invoice.business_snapshot.business_name}
@@ -424,10 +509,18 @@ Thank you.
         </div>
       )}
 
+      {!isSenderView && isReceiptView && (
+        <div className="bg-emerald-50 border-b border-emerald-100 p-4 text-center print:hidden shrink-0">
+          <p className="text-emerald-800 font-medium">
+            This is your receipt from {invoice.business_snapshot.business_name}
+          </p>
+        </div>
+      )}
+
       {/* Scrollable Content */}
       <div className="flex-1 overflow-y-auto overflow-x-hidden pb-6 print:pb-0" style={{ WebkitOverflowScrolling: 'touch' }}>
         {/* PAID BANNER */}
-        {isPaid && (
+        {isPaid && !isReceiptView && (
           <div className="bg-emerald-600 text-white p-6 text-center print:hidden shadow-sm">
             <div className="flex justify-center mb-2">
               <CheckCircle className="w-12 h-12" />
@@ -440,7 +533,7 @@ Thank you.
         <div className="max-w-2xl mx-auto p-4 sm:p-6 print:p-0 mt-4 print:mt-0 relative overflow-hidden">
           
           {/* PAID WATERMARK */}
-          {isPaid && (
+          {isPaid && !isReceiptView && (
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0 overflow-hidden">
               <div className="text-[150px] font-black text-emerald-600 opacity-[0.06] -rotate-12 select-none">
                 PAID
@@ -450,7 +543,7 @@ Thank you.
 
           <div className="print:shadow-none print:border-none print:p-0 relative z-10">
             <div ref={invoiceRef}>
-              <TemplatePreview invoice={invoice} />
+              <TemplatePreview invoice={invoice} isReceipt={isReceiptView} />
             </div>
 
             {/* Activity Timeline */}
@@ -485,6 +578,13 @@ Thank you.
           <div className="max-w-2xl mx-auto w-full flex flex-col gap-3">
             {isPaid ? (
               <div className="flex flex-col gap-3 w-full">
+                <Button 
+                  onClick={handleSendReceipt} 
+                  disabled={isSending}
+                  className="w-full text-sm py-2 bg-emerald-600 hover:bg-emerald-700 text-white"
+                >
+                  <Send className="w-4 h-4 mr-2" /> Send Receipt
+                </Button>
                 <Button 
                   variant="secondary" 
                   onClick={handleCopyLink}

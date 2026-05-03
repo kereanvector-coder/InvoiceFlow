@@ -7,9 +7,9 @@ import { formatDate } from '../../utils/formatDate';
 import LogoDisplay from './LogoDisplay';
 import { getLogo } from './LogoDisplay';
 
-export default function ClassicTemplate({ invoice }: { invoice: Invoice | Quotation }) {
+export default function ClassicTemplate({ invoice, isReceipt }: { invoice: Invoice | Quotation, isReceipt?: boolean }) {
   const { business_snapshot: business, items } = invoice;
-  const details = getDocumentDetails(invoice);
+  const details = getDocumentDetails(invoice, isReceipt);
   const hasLogo = !!getLogo(invoice);
   const initials = business.business_name ? business.business_name.charAt(0).toUpperCase() : 'B';
   
@@ -102,14 +102,16 @@ export default function ClassicTemplate({ invoice }: { invoice: Invoice | Quotat
         <div className="grid grid-cols-2 gap-4 mb-3">
           {/* Payment Info */}
           <div>
+            {!isReceipt && <>
             <h3 className="text-[9px] font-bold text-[#7F8C8D] uppercase tracking-widest mb-1 border-b border-[#BDC3C7] pb-0.5">Payment Information</h3>
             <div className="bg-[#ECF0F1] p-1.5 rounded-sm text-[10px] text-[#34495E] leading-relaxed">
               <p><span className="font-bold text-[#2C3E50]">Bank:</span> {business.bank_name}</p>
               <p><span className="font-bold text-[#2C3E50]">Account Name:</span> {business.account_name}</p>
               <p><span className="font-bold text-[#2C3E50]">Account No:</span> <span className="font-mono">{business.account_number}</span></p>
             </div>
+            </>}
             
-            {details.isQuote && details.terms && (
+            {details.terms && (
               <div className="mt-2">
                 <div className="text-[8px] text-[#6B7280] uppercase tracking-[0.1em] font-bold mb-0.5">TERMS & CONDITIONS</div>
                 <div className="bg-[#F9FAFB] p-1 rounded-md">

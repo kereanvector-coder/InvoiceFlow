@@ -6,9 +6,9 @@ import { formatCurrency } from '../../utils/formatCurrency';
 import { formatDate } from '../../utils/formatDate';
 import LogoDisplay from './LogoDisplay';
 
-export default function CreativeTemplate({ invoice }: { invoice: Invoice | Quotation }) {
+export default function CreativeTemplate({ invoice, isReceipt }: { invoice: Invoice | Quotation, isReceipt?: boolean }) {
   const { business_snapshot: business, items } = invoice;
-  const details = getDocumentDetails(invoice);
+  const details = getDocumentDetails(invoice, isReceipt);
 
   return (
     <div className="bg-[#FAF5FF] aspect-[210/297] font-sans text-[#1E1B4B]">
@@ -20,7 +20,7 @@ export default function CreativeTemplate({ invoice }: { invoice: Invoice | Quota
             <div className="text-[8px] text-[#FFFFFFB3] uppercase tracking-widest font-bold">Creative Invoice</div>
           </div>
           <div className="bg-[#F59E0B] text-[#1E1B4B] px-1.5 py-0.5 rounded-full text-[8px] font-bold uppercase tracking-wider">
-            {invoice.status}
+            {isReceipt ? "PAID IN FULL" : invoice.status}
           </div>
         </div>
         
@@ -41,7 +41,7 @@ export default function CreativeTemplate({ invoice }: { invoice: Invoice | Quota
 
       {/* Three colored dots row */}
       <div className="flex gap-1 px-2 mt-1">
-        <div className="w-1.5 h-1.5 rounded-full bg-[#7C3AED]"></div>
+        <div className={`w-1.5 h-1.5 rounded-full ${isReceipt ? 'bg-emerald-600' : 'bg-[#7C3AED]'}`}></div>
         <div className="w-1.5 h-1.5 rounded-full bg-[#F59E0B]"></div>
         <div className="w-1.5 h-1.5 rounded-full bg-[#FFFFFF4D]"></div>
       </div>
@@ -49,12 +49,12 @@ export default function CreativeTemplate({ invoice }: { invoice: Invoice | Quota
       {/* Two cards side by side */}
       <div className="px-2 mt-1 grid grid-cols-2 gap-1.5">
         <div className="bg-white rounded-md p-1.5 shadow-sm border-t-[3px] border-t-[#F59E0B]">
-          <div className="text-[7px] text-[#7C3AED] uppercase tracking-wider font-bold mb-0.5">Client</div>
+          <div className={`text-[7px] ${isReceipt ? 'text-emerald-600' : 'text-[#7C3AED]'} uppercase tracking-wider font-bold mb-0.5`}>Client</div>
           <div className="font-bold text-[#1E1B4B] text-[10px]">{invoice.client_name}</div>
           <div className="text-[#6B7280] text-[8px] mt-0.5">{invoice.client_phone}</div>
         </div>
         <div className="bg-white rounded-md p-1.5 shadow-sm border-t-[3px] border-t-[#7C3AED]">
-          <div className="text-[7px] text-[#7C3AED] uppercase tracking-wider font-bold mb-0.5">From</div>
+          <div className={`text-[7px] ${isReceipt ? 'text-emerald-600' : 'text-[#7C3AED]'} uppercase tracking-wider font-bold mb-0.5`}>From</div>
           <div className="font-bold text-[#1E1B4B] text-[10px]">{business.business_name}</div>
           <div className="text-[#6B7280] text-[8px] mt-0.5">{business.owner_name}</div>
         </div>
@@ -70,14 +70,14 @@ export default function CreativeTemplate({ invoice }: { invoice: Invoice | Quota
             <div key={i} className="p-1.5 border-b border-[#EDE9FE] last:border-b-0 flex justify-between items-center">
               <div>
                 <div className="text-[10px] font-bold text-[#1E1B4B]">{item.description}</div>
-                <div className="text-[8px] text-[#7C3AED] italic mt-0.5">Creative Deliverable</div>
+                <div className={`text-[8px] ${isReceipt ? 'text-emerald-600' : 'text-[#7C3AED]'} italic mt-0.5`}>Creative Deliverable</div>
               </div>
-              <div className="text-[11px] font-bold text-[#7C3AED]">
+              <div className={`text-[11px] font-bold ${isReceipt ? 'text-emerald-600' : 'text-[#7C3AED]'}`}>
                 {formatCurrency(item.quantity * item.unit_price)}
               </div>
             </div>
           ))}
-          <div className="bg-[#7C3AED] p-1.5 flex justify-between items-center">
+          <div className={`${isReceipt ? 'bg-emerald-600' : 'bg-[#7C3AED]'} p-1.5 flex justify-between items-center`}>
             <div className="text-[#F59E0B] text-[9px] font-bold uppercase tracking-wider">Total Investment</div>
             <div className="text-white font-bold text-[12px]">{formatCurrency(invoice.total_amount)}</div>
           </div>
@@ -86,7 +86,7 @@ export default function CreativeTemplate({ invoice }: { invoice: Invoice | Quota
 
       {/* Payment block */}
       <div className="px-2 mt-1">
-        <div className="bg-white border-2 border-[#EDE9FE] rounded-md p-1.5">
+        {!isReceipt && <div className="bg-white border-2 border-[#EDE9FE] rounded-md p-1.5">
           <div className="font-bold text-[#1E1B4B] text-[9px] mb-1">⚡ Payment Instructions</div>
           <div className="space-y-0.5 text-[9px]">
             <div className="flex justify-between">
@@ -102,8 +102,20 @@ export default function CreativeTemplate({ invoice }: { invoice: Invoice | Quota
               <span className="font-bold text-[#1E1B4B]">{business.account_name}</span>
             </div>
           </div>
-        </div>
+        </div>}
       </div>
+
+      {/* Terms */}
+      {details.terms && (
+        <div className="px-2 mt-1">
+          <div className="bg-[#FFFBEB] border border-[#FDE68A] rounded-md p-1.5">
+            <div className="font-bold text-[#D97706] text-[8px] uppercase tracking-wider mb-0.5">Terms & Conditions</div>
+            <div className="text-[9px] text-[#92400E] whitespace-pre-wrap">
+              {details.terms}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Dark footer card */}
       <div className="px-2 mt-1 pb-1">

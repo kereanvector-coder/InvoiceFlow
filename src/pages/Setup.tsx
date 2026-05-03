@@ -26,6 +26,9 @@ export default function Setup() {
   const [reminderCooldown, setReminderCooldown] = useState('24');
   const [defaultTemplate, setDefaultTemplate] = useState('corporate');
   
+  const [pageSize, setPageSize] = useState('auto');
+  const [marginSetting, setMarginSetting] = useState('none');
+  
   const [showClearConfirm, setShowClearConfirm] = useState(false);
   const [clearConfirmText, setClearConfirmText] = useState('');
 
@@ -43,6 +46,8 @@ export default function Setup() {
     setDefaultTax(safeGetItem('invoiceflow_default_tax') || '0');
     setReminderCooldown(safeGetItem('invoiceflow_reminder_cooldown') || '24');
     setDefaultTemplate(safeGetItem('invoiceflow_default_template') || 'corporate');
+    setPageSize(safeGetItem('invoiceflow_pdf_page_size') || 'auto');
+    setMarginSetting(safeGetItem('invoiceflow_pdf_margin') || 'none');
   }, [state.profile]);
 
   const formatPhoneNumber = (value: string) => {
@@ -155,6 +160,8 @@ export default function Setup() {
       safeSetItem('invoiceflow_default_tax', defaultTax);
       safeSetItem('invoiceflow_reminder_cooldown', reminderCooldown);
       safeSetItem('invoiceflow_default_template', defaultTemplate);
+      safeSetItem('invoiceflow_pdf_page_size', pageSize);
+      safeSetItem('invoiceflow_pdf_margin', marginSetting);
       
       if (darkMode) {
         document.documentElement.classList.add('dark');
@@ -317,6 +324,48 @@ export default function Setup() {
                       <div className="font-bold text-sm text-neutral-900 dark:text-neutral-50">{tpl.name}</div>
                     </div>
                   ))}
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* PDF Generation */}
+          <section>
+            <h2 className="text-sm font-bold text-neutral-500 uppercase tracking-wider mb-3 px-1">PDF & Document Export</h2>
+            <div className="bg-white dark:bg-neutral-900 rounded-xl border border-border overflow-hidden divide-y divide-border">
+              <div className="p-4 flex flex-col gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">Page Size</label>
+                  <div className="relative">
+                    <select 
+                      value={pageSize}
+                      onChange={(e) => setPageSize(e.target.value)}
+                      className="w-full px-4 py-2 border border-border rounded-lg bg-neutral-50 dark:bg-neutral-950 text-neutral-900 dark:text-neutral-50 appearance-none outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500"
+                    >
+                      <option value="auto">Auto (Fit to Content)</option>
+                      <option value="a4">Standard A4</option>
+                      <option value="letter">US Letter</option>
+                    </select>
+                    <ChevronDown className="absolute right-3 top-[10px] w-5 h-5 text-neutral-400 pointer-events-none" />
+                  </div>
+                  <p className="mt-1 text-xs text-neutral-500">Auto size is recommended for mobile devices.</p>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">Document Margins</label>
+                  <div className="relative">
+                    <select 
+                      value={marginSetting}
+                      onChange={(e) => setMarginSetting(e.target.value)}
+                      className="w-full px-4 py-2 border border-border rounded-lg bg-neutral-50 dark:bg-neutral-950 text-neutral-900 dark:text-neutral-50 appearance-none outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500"
+                    >
+                      <option value="none">None</option>
+                      <option value="small">Small</option>
+                      <option value="normal">Normal</option>
+                      <option value="large">Large</option>
+                    </select>
+                    <ChevronDown className="absolute right-3 top-[10px] w-5 h-5 text-neutral-400 pointer-events-none" />
+                  </div>
                 </div>
               </div>
             </div>

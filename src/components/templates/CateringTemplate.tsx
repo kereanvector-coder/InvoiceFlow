@@ -7,9 +7,9 @@ import { formatDate } from '../../utils/formatDate';
 import LogoDisplay from './LogoDisplay';
 import { getLogo } from './LogoDisplay';
 
-export default function CateringTemplate({ invoice }: { invoice: Invoice | Quotation }) {
+export default function CateringTemplate({ invoice, isReceipt }: { invoice: Invoice | Quotation, isReceipt?: boolean }) {
   const { business_snapshot: business, items } = invoice;
-  const details = getDocumentDetails(invoice);
+  const details = getDocumentDetails(invoice, isReceipt);
   const hasLogo = !!getLogo(invoice);
 
   return (
@@ -38,7 +38,7 @@ export default function CateringTemplate({ invoice }: { invoice: Invoice | Quota
         <div className="text-right">
           <div className="text-[13px] font-bold text-[#450A0A] font-mono leading-none mb-1">#{details.documentNumber}</div>
           <div className="bg-[#FEE2E2] text-[#9B1C1C] px-1.5 py-0.5 rounded-full text-[8px] font-bold uppercase tracking-wider inline-block mb-1">
-            {invoice.status}
+            {isReceipt ? "PAID IN FULL" : invoice.status}
           </div>
           <div className="text-[9px] text-[#6B7280] block">{formatDate(invoice.created_at)}</div>
         </div>
@@ -100,7 +100,7 @@ export default function CateringTemplate({ invoice }: { invoice: Invoice | Quota
       </div>
 
       {/* Payment */}
-      <div className="mx-3 mt-1.5 bg-white rounded-[8px] border border-[#FECACA] p-2">
+      {!isReceipt && <div className="mx-3 mt-1.5 bg-white rounded-[8px] border border-[#FECACA] p-2">
         <div className="text-[10px] font-bold text-[#9B1C1C] mb-1.5">🏦 Payment Details</div>
         <div className="space-y-1 text-[9px]">
           <div className="flex justify-between">
@@ -116,10 +116,10 @@ export default function CateringTemplate({ invoice }: { invoice: Invoice | Quota
             <span className="font-bold text-[#450A0A]">{business.account_name}</span>
           </div>
         </div>
-      </div>
+      </div>}
 
       
-        {details.isQuote && details.terms && (
+        {details.terms && (
           <div className="mx-3 mt-1.5 mb-1.5">
             <div className="text-[9px] text-[#6B7280] uppercase tracking-[0.1em] font-bold mb-0.5">TERMS & CONDITIONS</div>
             <div className="bg-[#F9FAFB] p-1.5 rounded-md">

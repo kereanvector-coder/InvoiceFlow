@@ -1,52 +1,65 @@
 const fs = require('fs');
 const path = require('path');
 
-const replacements = {
-  'text-gray-400': 'text-[#9CA3AF]',
-  'text-gray-500': 'text-[#6B7280]',
-  'text-gray-600': 'text-[#4B5563]',
-  'text-gray-900': 'text-[#111827]',
-  'text-red-400': 'text-[#F87171]',
-  'text-emerald-400': 'text-[#34D399]',
-  'text-emerald-500': 'text-[#10B981]',
-  'text-neutral-200': 'text-[#E5E5E5]',
-  'text-neutral-300': 'text-[#D4D4D4]',
-  'text-neutral-400': 'text-[#A3A3A3]',
-  'text-neutral-500': 'text-[#737373]',
-  'bg-emerald-500/20': 'bg-[#10B98133]',
-  'border-emerald-500/30': 'border-[#10B9814D]',
-  'bg-emerald-500/10': 'bg-[#10B9811A]',
-  'border-emerald-500/20': 'border-[#10B98133]',
-  'bg-red-500/20': 'bg-[#EF444433]',
-  'border-red-500/30': 'border-[#EF44444D]',
-  'bg-neutral-800': 'bg-[#262626]',
-  'border-neutral-700': 'border-[#404040]',
-  'border-neutral-800': 'border-[#262626]',
-  'text-emerald-500/80': 'text-[#10B981CC]',
-  'bg-gray-50': 'bg-[#F9FAFB]',
-  'border-gray-400': 'border-[#9CA3AF]',
-  'border-neutral-300': 'border-[#D4D4D4]'
-};
+const templatesDir = path.join(__dirname, 'src', 'components', 'templates');
+const files = fs.readdirSync(templatesDir).filter(f => f.endsWith('Template.tsx'));
 
-const dir = path.join(__dirname, 'src/components/templates');
-const files = fs.readdirSync(dir).filter(f => f.endsWith('.tsx'));
+const primaryColors = [
+  '#1E3A5F', '#C9A84C', '#0EA5E9', '#0284C7', '#7C3AED', '#6D28D9', 
+  '#09090B', '#F5F5F5', '#E11D48', '#BE123C', '#2563EB', '#1D4ED8',
+  '#D97706', '#B45309', '#020617', '#C2A370', '#18181B', '#F5F0E8',
+  '#064E3B', '#F97316', '#EA580C', 'slate-900', 'slate-800', 'blue-600',
+  'indigo-600', 'purple-600', 'rose-600', 'amber-600', 'red-600',
+];
 
-for (const file of files) {
-  const filePath = path.join(dir, file);
+files.forEach(file => {
+  const filePath = path.join(templatesDir, file);
   let content = fs.readFileSync(filePath, 'utf8');
-  let modified = false;
 
-  for (const [key, value] of Object.entries(replacements)) {
-    // Replace whole words to avoid partial matches
-    const regex = new RegExp(`\\b${key.replace(/\//g, '\\/')}\\b`, 'g');
-    if (regex.test(content)) {
-      content = content.replace(regex, value);
-      modified = true;
+  // Let's replace simple string classNames with JS template literals
+  // We look for className="..."
+  content = content.replace(/className="([^"]+)"/g, (match, inner) => {
+    let newInner = inner;
+    let modified = false;
+    
+    // Replace hex arrays
+    primaryColors.forEach(color => {
+      if (color.startsWith('#')) {
+        if (newInner.includes(`bg-[${color}]`)) {
+          newInner = newInner.replace(`bg-[${color}]`, `\${isReceipt ? 'bg-emerald-600' : 'bg-[${color}]'}`);
+          modified = true;
+        }
+        if (newInner.includes(`text-[${color}]`)) {
+          newInner = newInner.replace(`text-[${color}]`, `\${isReceipt ? 'text-emerald-600' : 'text-[${color}]'}`);
+          modified = true;
+        }
+        if (newInner.includes(`border-[${color}]`)) {
+          newInner = newInner.replace(`border-[${color}]`, `\${isReceipt ? 'border-emerald-600' : 'border-[${color}]'}`);
+          modified = true;
+        }
+      } else {
+        if (newInner.includes(`bg-${color}`)) {
+          newInner = newInner.replace(`bg-${color}`, `\${isReceipt ? 'bg-emerald-600' : 'bg-${color}'}`);
+          modified = true;
+        }
+        if (newInner.includes(`text-${color}`)) {
+          newInner = newInner.replace(`text-${color}`, `\${isReceipt ? 'text-emerald-600' : 'text-${color}'}`);
+          modified = true;
+        }
+        if (newInner.includes(`border-${color}`)) {
+          newInner = newInner.replace(`border-${color}`, `\${isReceipt ? 'border-emerald-600' : 'border-${color}'}`);
+          modified = true;
+        }
+      }
+    });
+
+    if (modified) {
+      return `className={\`${newInner}\`}`;
     }
-  }
+    return match;
+  });
 
-  if (modified) {
-    fs.writeFileSync(filePath, content, 'utf8');
-    console.log(`Updated ${file}`);
-  }
-}
+  fs.writeFileSync(filePath, content, 'utf8');
+});
+
+console.log('Colors replaced successfully');

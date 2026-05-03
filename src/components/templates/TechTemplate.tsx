@@ -7,9 +7,9 @@ import { formatDate } from '../../utils/formatDate';
 import LogoDisplay from './LogoDisplay';
 import { getLogo } from './LogoDisplay';
 
-export default function TechTemplate({ invoice }: { invoice: Invoice | Quotation }) {
+export default function TechTemplate({ invoice, isReceipt }: { invoice: Invoice | Quotation, isReceipt?: boolean }) {
   const { business_snapshot: business, items } = invoice;
-  const details = getDocumentDetails(invoice);
+  const details = getDocumentDetails(invoice, isReceipt);
   
   const getRelativeDateText = (dateString: string) => {
     const date = new Date(dateString);
@@ -88,7 +88,8 @@ export default function TechTemplate({ invoice }: { invoice: Invoice | Quotation
           </div>
         </div>
         
-        <div className="bg-[#161B22] border border-[#30363D] rounded-lg p-1.5">
+        {/* <div className="bg-[#161B22] border border-[#30363D] rounded-lg p-1.5"> */}
+        {!isReceipt && <div className="bg-[#161B22] border border-[#30363D] rounded-lg p-1.5">
           <div className="text-[8px] text-[#238636] mb-0.5">bank_name:</div>
           <div className="text-[9px] text-white mb-1">'{business.bank_name}'</div>
           
@@ -97,7 +98,7 @@ export default function TechTemplate({ invoice }: { invoice: Invoice | Quotation
           
           <div className="text-[8px] text-[#238636] mb-0.5">account_name:</div>
           <div className="text-[9px] text-[#8B949E]">'{business.account_name}'</div>
-        </div>
+        </div>}
       </div>
 
       {/* Deliverables section */}
@@ -120,7 +121,7 @@ export default function TechTemplate({ invoice }: { invoice: Invoice | Quotation
         ))}
 
         
-        {details.isQuote && details.terms && (
+        {details.terms && (
           <div className="mb-1 mt-1">
             <div className="text-[8px] text-[#8B949E] uppercase tracking-[0.1em] font-bold mb-0.5">TERMS & CONDITIONS</div>
             <div className="bg-[#161B22] p-1 rounded-md">
@@ -154,7 +155,7 @@ export default function TechTemplate({ invoice }: { invoice: Invoice | Quotation
       </div>
 
       {/* Transfer instructions */}
-      <div className="mx-2 mt-1 bg-[#161B22] border border-[#238636] rounded-lg p-1.5">
+      {!isReceipt && <div className="mx-2 mt-1 bg-[#161B22] border border-[#238636] rounded-lg p-1.5">
         <div className="text-[8px] text-[#238636] mb-0.5">// transfer_instructions</div>
         <div className="text-[9px] leading-relaxed">
           <span className="text-[#E6EDF3]">{'{'}</span><br/>
@@ -163,7 +164,7 @@ export default function TechTemplate({ invoice }: { invoice: Invoice | Quotation
           <span className="text-[#58A6FF] ml-2">name:</span> <span className="text-[#A5D6FF]">'{business.account_name}'</span><br/>
           <span className="text-[#E6EDF3]">{'}'}</span>
         </div>
-      </div>
+      </div>}
 
       {/* Notes */}
       {invoice.notes && (

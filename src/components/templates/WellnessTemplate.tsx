@@ -6,9 +6,9 @@ import { formatCurrency } from '../../utils/formatCurrency';
 import { formatDate } from '../../utils/formatDate';
 import LogoDisplay from './LogoDisplay';
 
-export default function WellnessTemplate({ invoice }: { invoice: Invoice | Quotation }) {
+export default function WellnessTemplate({ invoice, isReceipt }: { invoice: Invoice | Quotation, isReceipt?: boolean }) {
   const { business_snapshot: business, items } = invoice;
-  const details = getDocumentDetails(invoice);
+  const details = getDocumentDetails(invoice, isReceipt);
 
   return (
     <div className="bg-[#F0FDF9] aspect-[210/297] font-sans text-[#134E4A] pb-6">
@@ -24,7 +24,7 @@ export default function WellnessTemplate({ invoice }: { invoice: Invoice | Quota
           </div>
           <div className="text-right">
             <div className="bg-white text-[#0D9488] px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider mb-1 inline-block">
-              {invoice.status}
+              {isReceipt ? "PAID IN FULL" : invoice.status}
             </div>
             <div className="text-[11px] text-[#FFFFFFB3] block">{details.documentNumber}</div>
           </div>
@@ -97,7 +97,7 @@ export default function WellnessTemplate({ invoice }: { invoice: Invoice | Quota
       </div>
 
       
-        {details.isQuote && details.terms && (
+        {details.terms && (
           <div className="mx-4 mt-2 mb-2">
             <div className="text-[10px] text-[#6B7280] uppercase tracking-[0.1em] font-bold mb-1">TERMS & CONDITIONS</div>
             <div className="bg-[#F9FAFB] p-2 rounded-md">

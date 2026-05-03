@@ -25,6 +25,7 @@ export interface Invoice {
   total_amount: number; // kobo
   status: InvoiceStatus;
   notes?: string;
+  terms?: string;
   created_at: string;
   due_date: string;
   sent_at: string | null;
@@ -33,6 +34,10 @@ export interface Invoice {
   reminder_count: number;
   reminder_history: string[];
   is_deleted: boolean;
+  receipt_number?: string | null;
+  receipt_generated_at?: string | null;
+  receipt_sent_at?: string | null;
+  receipt_snapshot?: string | null;
 }
 
 const STORAGE_KEY = 'invoiceflow_invoices';
@@ -104,6 +109,23 @@ export const getNextInvoiceNumber = (): string => {
   
   const nextNum = maxNum + 1;
   return `INV-${nextNum.toString().padStart(3, '0')}`;
+};
+
+export const getNextReceiptNumber = (): string => {
+  const invoices = readInvoices();
+  let maxNum = 0;
+  invoices.forEach(inv => {
+    if (inv.receipt_number) {
+      const match = inv.receipt_number.match(/^RCT-(\d+)$/);
+      if (match) {
+        const num = parseInt(match[1], 10);
+        if (num > maxNum) maxNum = num;
+      }
+    }
+  });
+  
+  const nextNum = maxNum + 1;
+  return `RCT-${nextNum.toString().padStart(3, '0')}`;
 };
 
 const calculateTotals = (items: InvoiceItem[], tax_rate: number) => {

@@ -43,7 +43,11 @@ function RootHandler() {
   const params = new URLSearchParams(window.location.search);
   const invoiceData = params.get('invoice');
   const quoteData = params.get('quote');
+  const receiptData = params.get('receipt');
   
+  if (receiptData) {
+    return <Navigate to={`/invoice/shared?receipt=${encodeURIComponent(receiptData)}`} replace />;
+  }
   if (invoiceData) {
     return <Navigate to={`/invoice/shared?data=${encodeURIComponent(invoiceData)}`} replace />;
   }

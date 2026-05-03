@@ -12,6 +12,7 @@ import {
   MoreVertical, CheckCircle, Bell, Send, Trash2, Eye, ArrowUpDown,
   CheckCircle2, CheckSquare, Square, AlertCircle, FileSignature, Wallet
 } from 'lucide-react';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 
 type TabType = 'All' | 'Overdue' | 'Sent' | 'Draft' | 'Paid';
 type SortOrder = 'newest' | 'oldest' | 'amount_desc' | 'amount_asc';
@@ -366,6 +367,31 @@ export default function Dashboard() {
   const canBulkRemind = selectedInvoices.length > 0 && selectedInvoices.every(inv => inv.status === 'sent' || inv.status === 'overdue');
   const canBulkDelete = selectedInvoices.length > 0 && selectedInvoices.every(inv => inv.status === 'draft');
 
+  const getMonthlyExpensesData = () => {
+    const data = [];
+    const now = new Date();
+    
+    for (let i = 5; i >= 0; i--) {
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      const targetMonth = d.getMonth();
+      const targetYear = d.getFullYear();
+      
+      const sum = expenses.reduce((acc, exp) => {
+        const expDate = new Date(exp.date);
+        if (expDate.getMonth() === targetMonth && expDate.getFullYear() === targetYear) {
+          return acc + exp.amount;
+        }
+        return acc;
+      }, 0);
+      
+      const monthLabel = d.toLocaleString('en-US', { month: 'short' });
+      data.push({ name: monthLabel, amount: sum, isCurrentMonth: i === 0 });
+    }
+    return data;
+  };
+
+  const monthlyExpensesData = getMonthlyExpensesData();
+
   return (
     <div className="min-h-screen bg-bg pb-32 font-sans">
       <Toast 
@@ -505,6 +531,47 @@ export default function Dashboard() {
           )}
         </div>
 
+        {/* EXPENSE CHART */}
+        <div className="bg-white dark:bg-neutral-900 rounded-2xl p-5 shadow-[0_1px_3px_rgba(0,0,0,0.08)] mb-6">
+          <h2 className="text-lg font-bold text-neutral-900 dark:text-neutral-50 mb-4">Monthly Expenses</h2>
+          <div className="h-64">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={monthlyExpensesData} margin={{ top: 5, right: 0, left: -20, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
+                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: '#6B7280', fontSize: 12 }} dy={10} />
+                <YAxis 
+                  axisLine={false} 
+                  tickLine={false} 
+                  tick={{ fill: '#6B7280', fontSize: 12 }} 
+                  tickFormatter={(value) => {
+                    if (value === 0) return '0';
+                    return value >= 1000 ? `${(value / 1000).toFixed(value % 1000 !== 0 ? 1 : 0)}k` : value;
+                  }}
+                />
+                <Tooltip 
+                  cursor={{ fill: 'rgba(243, 244, 246, 0.5)' }}
+                  content={({ active, payload }) => {
+                    if (active && payload && payload.length) {
+                      return (
+                        <div className="bg-white dark:bg-neutral-800 p-2 border border-neutral-200 dark:border-neutral-700 shadow-md rounded-lg">
+                          <p className="text-sm font-medium text-neutral-900 dark:text-neutral-50 mb-1">{payload[0].payload.name}</p>
+                          <p className="text-sm font-bold text-emerald-600">{formatCurrency(payload[0].value as number)}</p>
+                        </div>
+                      );
+                    }
+                    return null;
+                  }}
+                />
+                <Bar dataKey="amount" radius={[4, 4, 0, 0]}>
+                  {monthlyExpensesData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.isCurrentMonth ? '#059669' : '#A7F3D0'} />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
         {/* PART 4 — INVOICE LIST */}
         <div>
           <div className="flex justify-between items-center mb-4 px-1">
@@ -618,6 +685,11 @@ export default function Dashboard() {
                         <p className="text-xs text-neutral-500 mt-0.5"><span className="font-mono">{inv.invoice_number}</span> • {getRelativeDateText(inv.created_at)}</p>
                       </div>
                       <div className="flex items-center gap-2 shrink-0">
+                        {inv.receipt_generated_at && (
+                          <div className="flex items-center text-emerald-600 bg-emerald-50 dark:bg-emerald-900/20 px-1.5 py-0.5 rounded text-xs gap-0.5" title="Receipt Generated">
+                            <FileSignature className="w-3.5 h-3.5" />
+                          </div>
+                        )}
                         <Badge variant={inv.status}>{inv.status.toUpperCase()}</Badge>
                         
                         {/* PART 8 — THREE-DOT MENU */}
